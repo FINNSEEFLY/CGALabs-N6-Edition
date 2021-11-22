@@ -6,13 +6,13 @@ namespace CGALabs_N6_Edition
     public class FastBitmap : IDisposable
     {
         public Bitmap Bitmap { get; private set; }
-        public int[] Bits { get; private set; }
+        private int[] Bits { get; set; }
         public bool Disposed { get; private set; }
         public int Height { get; private set; }
         public int Width { get; private set; }
         public int BitmapSize => Bits.Length;
 
-        protected GCHandle BitsHandle { get; private set; }
+        private GCHandle BitsHandle { get; set; }
 
         public static FastBitmap FromBitmap(Bitmap bitmap)
         {
