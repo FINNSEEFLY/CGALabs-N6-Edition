@@ -30,7 +30,7 @@ namespace CGALabs_N6_Edition
             return result;
         }
 
-        protected static void FindMinAndMaxY(List<Pixel> sidesList, out int min, out int max)
+        protected static void SearchMinAndMaxY(List<Pixel> sidesList, out int min, out int max)
         {
             var list = sidesList.OrderBy(x => (int)x.Point.Y).ToList();
             min = (int)list[0].Point.Y;
@@ -51,7 +51,7 @@ namespace CGALabs_N6_Edition
             return _bitmap.Bitmap;
         }
 
-        protected static void FindStartAndEndXByY(List<Pixel> sidesList, int y, out Pixel pixelFrom, out Pixel pixelTo)
+        protected static void SearchStartAndEndXByY(List<Pixel> sidesList, int y, out Pixel pixelFrom, out Pixel pixelTo)
         {
             if (sidesList == null) throw new ArgumentNullException(nameof(sidesList));
             var sameYList = sidesList

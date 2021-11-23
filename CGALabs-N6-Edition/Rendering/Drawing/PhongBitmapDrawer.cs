@@ -29,24 +29,20 @@ namespace CGALabs_N6_Edition
             this._model = model;
 
 
-            DrawAllPixels(lightVector, viewVector);
+            DrawPixels(lightVector, viewVector);
 
             return _bitmap.Bitmap;
         }
 
-        private void DrawAllPixels(Vector3 lightVector, Vector3 viewVector)
+        private void DrawPixels(Vector3 lightVector, Vector3 viewVector)
         {
             var polygonsList = _model.Polygons;
 
-            Parallel.ForEach(Partitioner.Create(0, polygonsList.Count), range =>
+            polygonsList.AsParallel().ForAll(polygon =>
             {
-                for (var i = range.Item1; i < range.Item2; i++)
+                if (IsPolygonVisible(polygon))
                 {
-                    var polygon = polygonsList[i];
-                    if (IsPolygonVisible(polygon))
-                    {
-                        DrawPolygon(polygon, lightVector, viewVector);
-                    }
+                    DrawPolygon(polygon, lightVector, viewVector);
                 }
             });
         }
@@ -115,11 +111,11 @@ namespace CGALabs_N6_Edition
 
         private void DrawPixelForRasterization(List<Pixel> sidesList, Vector3 lightVector, Vector3 viewVector)
         {
-            FindMinAndMaxY(sidesList, out var minY, out var maxY);
+            SearchMinAndMaxY(sidesList, out var minY, out var maxY);
 
             for (var y = minY + 1; y < maxY; y++)
             {
-                FindStartAndEndXByY(sidesList, y, out var pixelFrom, out var pixelTo);
+                SearchStartAndEndXByY(sidesList, y, out var pixelFrom, out var pixelTo);
 
                 IEnumerable<Pixel> drawnPixels = LineDrawer.DrawLinePoints(pixelFrom, pixelTo);
 
