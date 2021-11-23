@@ -116,7 +116,7 @@ namespace CGALabs_N6_Edition
                     error -= deltaY;
                     point1.X += signX;
                 }
-                
+
                 if (error2 >= deltaX) continue;
                 error += deltaX;
                 point1.Y += signY;

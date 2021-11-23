@@ -1,10 +1,8 @@
-﻿using System;
-using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace CGALabs_N6_Edition
 {
-    public class PhongLighting
+    public class PhongLight
     {
         // Цвет рассеянного света
         private readonly Color _objectColor;
@@ -20,9 +18,9 @@ namespace CGALabs_N6_Edition
         // Коэффициент рассеянного освещения
         private const float Kd = 0.9f;
         // Коэффициент зеркального освещения
-        private const float Ks = 0.3f; 
+        private const float Ks = 0.3f;
 
-        public PhongLighting(
+        public PhongLight(
             Color objectColor,
             Color lightColor,
             Color ambientColor)
@@ -42,29 +40,29 @@ namespace CGALabs_N6_Edition
             var Id = Kd * Math.Max(Vector3.Dot(normalVector, lightVector), 0) * _objectColor.ToVector3();
 
             var reflectVector = Vector3.Normalize(Vector3.Reflect(-lightVector, normalVector));
-            
+
             var Is = Ks
                      * (float)Math.Pow(
                          Math.Max(
-                             0, 
+                             0,
                              Vector3.Dot(reflectVector, viewVector)
-                         ), 
+                         ),
                          Alpha
                      )
                      * _lightColor.ToVector3();
 
             var color = Ia + Id + Is;
 
-            var red = 
+            var red =
                 color.X <= 255
                     ? (byte)color.X
                     : (byte)255;
-            var green = 
+            var green =
                 color.Y <= 255
                     ? (byte)color.Y
                     : (byte)255;
-            var blue = 
-                color.Z <= 255 
+            var blue =
+                color.Z <= 255
                     ? (byte)color.Z
                     : (byte)255;
 

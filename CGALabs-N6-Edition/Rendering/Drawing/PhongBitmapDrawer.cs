@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace CGALabs_N6_Edition
 {
     public class PhongBitmapDrawer : BitmapDrawer
     {
-        private PhongLighting Light { get; set; }
+        private PhongLight Light { get; set; }
 
         private int Width => _bitmap.Width;
 
@@ -20,7 +15,7 @@ namespace CGALabs_N6_Edition
         {
             _bitmap = new FastBitmap(width, height);
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
-            Light = new PhongLighting(_activeColor, Color.AliceBlue, Color.DarkGreen);
+            Light = new PhongLight(_activeColor, Color.AliceBlue, Color.DarkGreen);
         }
 
         public Bitmap GetBitmap(List<Vector3> windowVertices, WatchModel model, Vector3 lightVector, Vector3 viewVector)
@@ -139,9 +134,9 @@ namespace CGALabs_N6_Edition
         {
             var point = pixel.Point;
 
-            if (point.X > 0 
-                && point.X < ZBuffer.Width 
-                && point.Y > 0 
+            if (point.X > 0
+                && point.X < ZBuffer.Width
+                && point.Y > 0
                 && point.Y < ZBuffer.Height)
             {
                 if (point.Z <= ZBuffer[(int)point.X, (int)point.Y])
@@ -152,11 +147,11 @@ namespace CGALabs_N6_Edition
                     var color = Light.GetPointColor(pixel.Normal, lightVector, viewVector - world3);
 
                     ZBuffer[(int)point.X, (int)point.Y] = point.Z;
-                    _bitmap.SetPixel((int)point.X, (int)point.Y,color);
+                    _bitmap.SetPixel((int)point.X, (int)point.Y, color);
                 }
             }
         }
 
-        
+
     }
 }

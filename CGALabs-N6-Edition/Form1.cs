@@ -20,10 +20,10 @@ namespace CGALabs_N6_Edition
         private bool _isMouseDown = false;
         private Point _mousePosition = new(0, 0);
 
-        private PhongBitmapDrawer _phongBitmapDrawer;
+        //private PhongBitmapDrawer _phongBitmapDrawer;
+        private LambertBitmapDrawer _lambertBitmapDrawer;
 
-        // private LambertBitmapDrawer _lambertBitmapDrawer;
-        private LightSourceManipulator _lightSourceManipulator;
+        private LightManipulator _lightSourceManipulator;
 
         private List<Vector3> _points = new();
 
@@ -44,11 +44,11 @@ namespace CGALabs_N6_Edition
             InitializeComponent();
 
             _cameraManipulator = new CameraManipulator();
-            _lightSourceManipulator = new LightSourceManipulator();
+            _lightSourceManipulator = new LightManipulator();
             _transformer = new MatrixTransformer(Size.Width, Size.Height);
             // _bitmapDrawer = new BitmapDrawer(Size.Width, Size.Height);
-            // _lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
-            _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
+            _lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
+            //_phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
             _timer = new Timer
             {
                 Interval = _timerInterval,
@@ -76,12 +76,12 @@ namespace CGALabs_N6_Edition
 
             _points = _transformer.Transform(_cameraManipulator.Camera, _watchModel);
             // this.BackgroundImage = _bitmapDrawer.GetBitmap(_points, _watchModel);
-            this.BackgroundImage = _phongBitmapDrawer.GetBitmap(_points, _watchModel,
-                _lightSourceManipulator.LightSource, _cameraManipulator.Camera.Eye);
-            // this.BackgroundImage = _lambertBitmapDrawer.GetBitmap(_points, _watchModel, _lightSourceManipulator.LightSource);
+            /*this.BackgroundImage = _phongBitmapDrawer.GetBitmap(_points, _watchModel,
+            _lightSourceManipulator.LightSource, _cameraManipulator.Camera.Eye);*/
+            this.BackgroundImage = _lambertBitmapDrawer.GetBitmap(_points, _watchModel, _lightSourceManipulator.LightSource);
 
             var timeForDrawing = (DateTime.Now - startTime).TotalMilliseconds;
-            var interval = (int) (_timerInterval - timeForDrawing);
+            var interval = (int)(_timerInterval - timeForDrawing);
             _timer.Interval = interval <= 0 ? 1 : interval;
 
             _timer.Start();
@@ -133,8 +133,8 @@ namespace CGALabs_N6_Edition
 
             // _bitmapDrawer = new BitmapDrawer(Size.Width, Size.Height);
 
-            _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
-            // _lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
+            //_phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
+             _lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
         }
 
         private void Form1_Resize(object sender, EventArgs e)

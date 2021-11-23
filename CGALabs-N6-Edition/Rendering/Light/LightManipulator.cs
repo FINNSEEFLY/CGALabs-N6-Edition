@@ -2,13 +2,13 @@
 
 namespace CGALabs_N6_Edition
 {
-    public class LightSourceManipulator
+    public class LightManipulator
     {
         public Vector3 LightSource { get; private set; }
 
         private const float Sensitivity = 0.1f;
 
-        public LightSourceManipulator()
+        public LightManipulator()
         {
             LightSource = new Vector3(0, 500, 0);
         }

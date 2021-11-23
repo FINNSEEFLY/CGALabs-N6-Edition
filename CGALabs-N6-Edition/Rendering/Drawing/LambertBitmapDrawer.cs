@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace CGALabs_N6_Edition
 {
     public class LambertBitmapDrawer : BitmapDrawer
     {
-        private LambertLighting Light { get; set; }
+        private LambertLight Light { get; set; }
 
         private int Width => _bitmap.Width;
 
@@ -20,7 +15,7 @@ namespace CGALabs_N6_Edition
         {
             _bitmap = new FastBitmap(width, height);
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
-            Light = new LambertLighting(_activeColor);
+            Light = new LambertLight(_activeColor);
         }
 
         public Bitmap GetBitmap(List<Vector3> windowVertices, WatchModel model, Vector3 lightVector)
@@ -83,14 +78,14 @@ namespace CGALabs_N6_Edition
                 colors.Add(pointColor);
             }
 
-            return LambertLighting.GetAverageColor(colors);
+            return LambertLight.GetAverageColor(colors);
         }
 
         private void DrawLine(
-            int from, 
-            int to, 
-            List<Vector3> indexes, 
-            Color color, 
+            int from,
+            int to,
+            List<Vector3> indexes,
+            Color color,
             List<Pixel> sidesList)
         {
             var indexFrom = (int)indexes[from].X - 1;
@@ -153,7 +148,7 @@ namespace CGALabs_N6_Edition
                 if (point.Z <= ZBuffer[(int)point.X, (int)point.Y])
                 {
                     ZBuffer[(int)point.X, (int)point.Y] = point.Z;
-                    _bitmap.SetPixel((int)point.X, (int)point.Y,color);
+                    _bitmap.SetPixel((int)point.X, (int)point.Y, color);
                 }
             }
         }

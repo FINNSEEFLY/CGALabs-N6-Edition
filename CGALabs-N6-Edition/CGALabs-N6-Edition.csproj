@@ -24,8 +24,4 @@
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Rendering\Light\" />
-  </ItemGroup>
-
 </Project>
