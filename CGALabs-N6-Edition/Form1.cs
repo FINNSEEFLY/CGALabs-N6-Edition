@@ -49,6 +49,7 @@ namespace CGALabs_N6_Edition
             // _bitmapDrawer = new BitmapDrawer(Size.Width, Size.Height);
             //_lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
             _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
+            textureBitmapDrawer = new TextureBitmapDrawer(Size.Width, Size.Height);
             _timer = new Timer
             {
                 Interval = _timerInterval,
@@ -79,7 +80,7 @@ namespace CGALabs_N6_Edition
             this.BackgroundImage = _phongBitmapDrawer.GetBitmap(_points, _visualizationModel,
             _lightSourceManipulator.LightSourcePosition, _cameraManipulator.Camera.Eye);
             //this.BackgroundImage = _lambertBitmapDrawer.GetBitmap(_points, _watchModel, _lightSourceManipulator.LightSource);
-
+            textureBitmapDrawer = new TextureBitmapDrawer(Size.Width, Size.Height);
             var timeForDrawing = (DateTime.Now - startTime).TotalMilliseconds;
             var interval = (int)(_timerInterval - timeForDrawing);
             _timer.Interval = interval <= 0 ? 1 : interval;
