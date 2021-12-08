@@ -18,7 +18,7 @@ namespace CGALabs_N6_Edition
             Light = new LambertLight(_activeColor);
         }
 
-        public Bitmap GetBitmap(List<Vector3> windowVertices, WatchModel model, Vector3 lightVector)
+        public Bitmap GetBitmap(List<Vector3> windowVertices, VisualizationModel model, Vector3 lightVector)
         {
             var width = Width;
             var height = Height;

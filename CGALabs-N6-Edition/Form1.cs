@@ -10,11 +10,11 @@ namespace CGALabs_N6_Edition
     {
         private readonly ILogger _logger;
         private readonly IObjectFileReader _objectFileReader;
-        private GraphicsObject _graphicsObject;
+        private ParsedGraphicsObject _parsedGraphicsObject;
         private MatrixTransformer _transformer;
         private BitmapDrawer _bitmapDrawer;
         private CameraManipulator _cameraManipulator;
-        private WatchModel _watchModel;
+        private VisualizationModel _visualizationModel;
         private readonly int _timerInterval = 6; // 6 - 144 FPS | 16 - 60 FPS | 33 - 30 FPS
         private readonly Timer _timer;
         private bool _isMouseDown = false;
@@ -64,7 +64,7 @@ namespace CGALabs_N6_Edition
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LoadObject();
-            _watchModel = new WatchModel(_graphicsObject);
+            _visualizationModel = new VisualizationModel(_parsedGraphicsObject);
             _timer.Start();
         }
 
@@ -74,10 +74,10 @@ namespace CGALabs_N6_Edition
 
             var startTime = DateTime.Now;
 
-            _points = _transformer.Transform(_cameraManipulator.Camera, _watchModel);
+            _points = _transformer.Transform(_cameraManipulator.Camera, _visualizationModel);
             // this.BackgroundImage = _bitmapDrawer.GetBitmap(_points, _watchModel);
-            this.BackgroundImage = _phongBitmapDrawer.GetBitmap(_points, _watchModel,
-            _lightSourceManipulator.LightSource, _cameraManipulator.Camera.Eye);
+            this.BackgroundImage = _phongBitmapDrawer.GetBitmap(_points, _visualizationModel,
+            _lightSourceManipulator.LightSourcePosition, _cameraManipulator.Camera.Eye);
             //this.BackgroundImage = _lambertBitmapDrawer.GetBitmap(_points, _watchModel, _lightSourceManipulator.LightSource);
 
             var timeForDrawing = (DateTime.Now - startTime).TotalMilliseconds;
@@ -120,7 +120,7 @@ namespace CGALabs_N6_Edition
                 return;
             }
 
-            _graphicsObject = _objectFileReader.GetGraphicsObject();
+            _parsedGraphicsObject = _objectFileReader.GetGraphicsObject();
 
 
             MessageBox.Show("Object has been read");

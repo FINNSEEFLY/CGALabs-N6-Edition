@@ -14,7 +14,7 @@ namespace CGALabs_N6_Edition
             Height = height;
         }
 
-        public List<Vector3> Transform(CameraModel camera, WatchModel model)
+        public List<Vector3> Transform(CameraModel camera, VisualizationModel model)
         {
             // Мировые координаты
             var worldMatrix = GetWorldSpace(model);
@@ -32,7 +32,7 @@ namespace CGALabs_N6_Edition
             return GetWindowSpace(transformMatrix, model.Vertexes);
         }
 
-        private Matrix4x4 GetWorldSpace(WatchModel model)
+        private Matrix4x4 GetWorldSpace(VisualizationModel model)
         {
             return Matrix4x4.CreateScale(model.Scale)
                    * GetRotation(model.Rotation)

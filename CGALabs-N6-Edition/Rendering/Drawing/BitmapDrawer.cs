@@ -11,7 +11,7 @@ namespace CGALabs_N6_Edition
 
         private int _activeColorArgb;
 
-        protected WatchModel _model;
+        protected VisualizationModel _model;
 
         private int Width => _bitmap.Width;
         private int Height => _bitmap.Height;
@@ -37,7 +37,7 @@ namespace CGALabs_N6_Edition
             max = (int)list[sidesList.Count - 1].Point.Y;
         }
 
-        public Bitmap GetBitmap(List<Vector3> windowVertices, WatchModel watchModel)
+        public Bitmap GetBitmap(List<Vector3> windowVertices, VisualizationModel visualizationModel)
         {
             var width = Width;
             var height = Height;
@@ -46,7 +46,7 @@ namespace CGALabs_N6_Edition
 
             _windowVertices = windowVertices;
 
-            watchModel.Polygons.AsParallel().ForAll(DrawLines);
+            visualizationModel.Polygons.AsParallel().ForAll(DrawLines);
 
             return _bitmap.Bitmap;
         }

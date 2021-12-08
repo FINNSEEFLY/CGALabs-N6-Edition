@@ -18,7 +18,7 @@ namespace CGALabs_N6_Edition
             Light = new PhongLight(_activeColor, Color.AliceBlue, Color.DarkGreen);
         }
 
-        public Bitmap GetBitmap(List<Vector3> windowVertices, WatchModel model, Vector3 lightVector, Vector3 viewVector)
+        public Bitmap GetBitmap(List<Vector3> windowVertices, VisualizationModel model, Vector3 lightVector, Vector3 viewVector)
         {
             var width = Width;
             var height = Height;

@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace CGALabs_N6_Edition
 {
-    public class WatchModel
+    public class VisualizationModel
     {
         public readonly List<Vector4> Vertexes;
         public List<Vector3> Textures;
@@ -15,15 +15,15 @@ namespace CGALabs_N6_Edition
 
         public int Scale = 1;
 
-        public WatchModel(GraphicsObject graphicsObject)
+        public VisualizationModel(ParsedGraphicsObject parsedGraphicsObject)
         {
             Position = Vector3.Zero;
             Rotation = Vector3.Zero;
 
-            Vertexes = graphicsObject.VertexList;
-            Textures = graphicsObject.VertexTextureList;
-            Normals = graphicsObject.VertexNormalList;
-            Polygons = graphicsObject.PolygonalIndexes;
+            Vertexes = parsedGraphicsObject.VertexList;
+            Textures = parsedGraphicsObject.VertexTextureList;
+            Normals = parsedGraphicsObject.VertexNormalList;
+            Polygons = parsedGraphicsObject.PolygonalIndexes;
             var max = GetMax();
             Scale = 500 / (max * 3);
         }
