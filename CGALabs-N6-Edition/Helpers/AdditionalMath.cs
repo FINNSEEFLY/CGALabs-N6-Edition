@@ -23,5 +23,19 @@ namespace CGALabs_N6_Edition
         {
             return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
         }
+
+        public static float Clamp(float coordinate, float parameter)
+        {
+            if (coordinate < 0)
+            {
+                return 0;
+            }
+
+            if (coordinate > parameter)
+            {
+                return parameter - 1;
+            }
+            return coordinate;
+        }
     }
 }

@@ -6,12 +6,13 @@ namespace CGALabs_N6_Edition
     {
         public CameraModel Camera { get; private set; }
 
-        private readonly float _sensitivity = 0.01f;
+        private const float Sensitivity = 0.01f;
+        private const float ZoomCoefficient = 50;
 
         public CameraManipulator()
         {
             Camera = new CameraModel(
-                new Vector3(0, 0, 500),
+                new Vector3(0, 0, 200),
                 new Vector3(0, 0, 0),
                 new Vector3(0, 1, 0),
                 AdditionalMath.ConvertDegreeToRadians(60)
@@ -20,18 +21,19 @@ namespace CGALabs_N6_Edition
 
         public void RotateY(int xOffset)
         {
-            Camera.Eye = Vector3.Transform(Camera.Eye, Matrix4x4.CreateRotationY(_sensitivity * -xOffset));
+            Camera.Eye = Vector3.Transform(Camera.Eye, Matrix4x4.CreateRotationY(Sensitivity * -xOffset));
         }
 
         public void RotateX(int yOffset)
         {
-            Camera.Eye = Vector3.Transform(Camera.Eye, Matrix4x4.CreateRotationX(_sensitivity * yOffset));
-            Camera.Up = Vector3.Transform(Camera.Up, Matrix4x4.CreateRotationX(_sensitivity * yOffset));
+            Camera.Eye = Vector3.Transform(Camera.Eye, Matrix4x4.CreateRotationX(Sensitivity * yOffset));
+            Camera.Up = Vector3.Transform(Camera.Up, Matrix4x4.CreateRotationX(Sensitivity * yOffset));
         }
 
-        public void RotateZ(int zOffset)
+        public void Zoom(bool isNegative = false)
         {
-            Camera.Eye = new Vector3(Camera.Eye.X, Camera.Eye.Y, Camera.Eye.Z + _sensitivity * zOffset);
+            var newZValue = Camera.Eye.Z - ZoomCoefficient * (isNegative ? -1 : 1);
+            Camera.Eye = new Vector3(Camera.Eye.X, Camera.Eye.Y, newZValue < 0 ? Camera.Eye.Z : newZValue);
         }
     }
 }

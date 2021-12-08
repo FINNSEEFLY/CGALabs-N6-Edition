@@ -7,5 +7,6 @@ namespace CGALabs_N6_Edition
         public Vector3 Normal;
         public Vector3 Point;
         public Vector4 World;
+        public Vector3 Texture;
     }
 }

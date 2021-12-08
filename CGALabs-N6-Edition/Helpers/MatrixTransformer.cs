@@ -18,6 +18,7 @@ namespace CGALabs_N6_Edition
         {
             // Мировые координаты
             var worldMatrix = GetWorldSpace(model);
+            model.WorldMatrix = worldMatrix;
 
             // Координаты наблюдателя
             var viewMatrix = GetViewSpace(camera);
@@ -29,7 +30,9 @@ namespace CGALabs_N6_Edition
             var transformMatrix = worldMatrix * viewMatrix * projectionMatrix;
 
             // Координаты окна
-            return GetWindowSpace(transformMatrix, model.Vertexes);
+            var vertexes = GetWindowSpace(transformMatrix, model.Vertexes);
+
+            return vertexes;
         }
 
         private Matrix4x4 GetWorldSpace(VisualizationModel model)

@@ -2,6 +2,7 @@ using CGALabs_N6_Edition.Interfaces;
 using CGALabs_N6_Edition.Models;
 using Microsoft.Extensions.Logging;
 using System.Numerics;
+using CGALabs_N6_Edition.Drawing;
 using Timer = System.Windows.Forms.Timer;
 
 namespace CGALabs_N6_Edition
@@ -20,8 +21,9 @@ namespace CGALabs_N6_Edition
         private bool _isMouseDown = false;
         private Point _mousePosition = new(0, 0);
 
-        private PhongBitmapDrawer _phongBitmapDrawer;
+        // private PhongBitmapDrawer _phongBitmapDrawer;
         //private LambertBitmapDrawer _lambertBitmapDrawer;
+        private TextureBitmapDrawer _textureBitmapDrawer;
 
         private LightManipulator _lightSourceManipulator;
 
@@ -48,8 +50,8 @@ namespace CGALabs_N6_Edition
             _transformer = new MatrixTransformer(Size.Width, Size.Height);
             // _bitmapDrawer = new BitmapDrawer(Size.Width, Size.Height);
             //_lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
-            _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
-            textureBitmapDrawer = new TextureBitmapDrawer(Size.Width, Size.Height);
+            // _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
+            _textureBitmapDrawer = new TextureBitmapDrawer(Size.Width, Size.Height);
             _timer = new Timer
             {
                 Interval = _timerInterval,
@@ -65,7 +67,6 @@ namespace CGALabs_N6_Edition
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LoadObject();
-            _visualizationModel = new VisualizationModel(_parsedGraphicsObject);
             _timer.Start();
         }
 
@@ -77,12 +78,18 @@ namespace CGALabs_N6_Edition
 
             _points = _transformer.Transform(_cameraManipulator.Camera, _visualizationModel);
             // this.BackgroundImage = _bitmapDrawer.GetBitmap(_points, _watchModel);
-            this.BackgroundImage = _phongBitmapDrawer.GetBitmap(_points, _visualizationModel,
-            _lightSourceManipulator.LightSourcePosition, _cameraManipulator.Camera.Eye);
+            /*this.BackgroundImage = _phongBitmapDrawer.GetBitmap(_points, _visualizationModel,
+            _lightSourceManipulator.LightSourcePosition, _cameraManipulator.Camera.Eye);*/
+            this.BackgroundImage = _textureBitmapDrawer.GetBitmap(
+                _points,
+                _visualizationModel,
+                _lightSourceManipulator.LightSourcePosition,
+                _cameraManipulator.Camera.Eye
+            );
+
             //this.BackgroundImage = _lambertBitmapDrawer.GetBitmap(_points, _watchModel, _lightSourceManipulator.LightSource);
-            textureBitmapDrawer = new TextureBitmapDrawer(Size.Width, Size.Height);
             var timeForDrawing = (DateTime.Now - startTime).TotalMilliseconds;
-            var interval = (int)(_timerInterval - timeForDrawing);
+            var interval = (int) (_timerInterval - timeForDrawing);
             _timer.Interval = interval <= 0 ? 1 : interval;
 
             _timer.Start();
@@ -121,7 +128,29 @@ namespace CGALabs_N6_Edition
                 return;
             }
 
+            var directory = Path.GetDirectoryName(filePath);
             _parsedGraphicsObject = _objectFileReader.GetGraphicsObject();
+            _visualizationModel = new VisualizationModel(_parsedGraphicsObject);
+            var path = Directory.EnumerateFiles(directory, "*.diffuse").FirstOrDefault();
+            if (File.Exists(path))
+            {
+                FastBitmap diffuseTexture = new(path);
+                _visualizationModel.DiffuseTexture = diffuseTexture;
+            }
+
+            path = Directory.EnumerateFiles(directory, "*.normal").FirstOrDefault();
+            if (File.Exists(path))
+            {
+                FastBitmap normalTexture = new(path);
+                _visualizationModel.NormalsTexture = normalTexture;
+            }
+
+            path = Directory.EnumerateFiles(directory, "*.reflect").FirstOrDefault();
+            if (File.Exists(path))
+            {
+                FastBitmap reflectionTexture = new(path);
+                _visualizationModel.ReflectionTexture = reflectionTexture;
+            }
 
 
             MessageBox.Show("Object has been read");
@@ -134,8 +163,9 @@ namespace CGALabs_N6_Edition
 
             // _bitmapDrawer = new BitmapDrawer(Size.Width, Size.Height);
 
-            _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
+            // _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
             // _lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
+            _textureBitmapDrawer = new TextureBitmapDrawer(Size.Width, Size.Height);
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -185,10 +215,26 @@ namespace CGALabs_N6_Edition
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode != Keys.Q) return;
-            _isCameraControl = !_isCameraControl;
-            var formMode = _isCameraControl ? CameraControl : LightControl;
-            this.Text = $"{_formTitle} | {formMode}";
+            switch (e.KeyCode)
+            {
+                case Keys.Q:
+                {
+                    _isCameraControl = !_isCameraControl;
+                    var formMode = _isCameraControl ? CameraControl : LightControl;
+                    this.Text = $"{_formTitle} | {formMode}";
+                    break;
+                }
+                case Keys.W:
+                {
+                    _cameraManipulator.Zoom();
+                    break;
+                }
+                case Keys.S:
+                {
+                    _cameraManipulator.Zoom(true);
+                    break;
+                }
+            }
         }
     }
 }

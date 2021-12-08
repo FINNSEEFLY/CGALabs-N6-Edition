@@ -9,9 +9,14 @@ namespace CGALabs_N6_Edition
         public List<Vector3> Textures;
         public List<Vector3> Normals;
         public readonly List<List<Vector3>> Polygons;
+        public FastBitmap NormalsTexture { get; set; }
+        public FastBitmap DiffuseTexture { get; set; }
+        public FastBitmap ReflectionTexture { get; set; }
 
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
+        public Matrix4x4 WorldMatrix { get; set; }
+
 
         public int Scale = 1;
 
