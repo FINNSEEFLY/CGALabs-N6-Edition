@@ -14,18 +14,18 @@ namespace CGALabs_N6_Edition
         private bool _isPathSet = false;
         private string _path;
         private string[] _lines;
-        private GraphicsObject _graphicsObject;
+        private ParsedGraphicsObject _parsedGraphicsObject;
         private readonly ILogger _logger;
         private readonly CultureInfo _usCultureInfo = new("en-us");
 
-        public GraphicsObject GetGraphicsObject()
+        public ParsedGraphicsObject GetGraphicsObject()
         {
-            if (_graphicsObject == null)
+            if (_parsedGraphicsObject == null)
             {
                 throw new ApplicationException("The object was not loaded");
             }
 
-            return _graphicsObject;
+            return _parsedGraphicsObject;
         }
 
         public ObjectFileReader(ILogger<ObjectFileReader> logger)
@@ -72,32 +72,32 @@ namespace CGALabs_N6_Edition
             return float.Parse(floatString, _usCultureInfo);
         }
 
-        private void ParseVertex(IReadOnlyList<string> parts, GraphicsObject graphicsObject)
+        private void ParseVertex(IReadOnlyList<string> parts, ParsedGraphicsObject parsedGraphicsObject)
         {
-            graphicsObject.VertexList.Add(new Vector4(
+            parsedGraphicsObject.VertexList.Add(new Vector4(
                 ParseFloatUS(parts[1]),
                 ParseFloatUS(parts[2]),
                 ParseFloatUS(parts[3]),
                 parts.Count > 4 ? ParseFloatUS(parts[4]) : 1));
         }
 
-        private void ParseVertexTexture(IReadOnlyList<string> parts, GraphicsObject graphicsObject)
+        private void ParseVertexTexture(IReadOnlyList<string> parts, ParsedGraphicsObject parsedGraphicsObject)
         {
-            graphicsObject.VertexTextureList.Add(new Vector3(
+            parsedGraphicsObject.VertexTextureList.Add(new Vector3(
                 ParseFloatUS(parts[1]),
                 ParseFloatUS(parts[2]),
                 parts.Count > 3 ? ParseFloatUS(parts[3]) : 0));
         }
 
-        private void ParseVertexNormal(IReadOnlyList<string> parts, GraphicsObject graphicsObject)
+        private void ParseVertexNormal(IReadOnlyList<string> parts, ParsedGraphicsObject parsedGraphicsObject)
         {
-            graphicsObject.VertexNormalList.Add(new Vector3(
+            parsedGraphicsObject.VertexNormalList.Add(new Vector3(
                 ParseFloatUS(parts[1]),
                 ParseFloatUS(parts[2]),
                 ParseFloatUS(parts[3])));
         }
 
-        private void ParsePolygonalFace(IReadOnlyList<string> parts, GraphicsObject graphicsObject)
+        private void ParsePolygonalFace(IReadOnlyList<string> parts, ParsedGraphicsObject parsedGraphicsObject)
         {
             var numOfVertex = parts.Count - 1;
 
@@ -118,7 +118,7 @@ namespace CGALabs_N6_Edition
                         ? int.Parse(polygonalParts[2])
                         : 0));
 
-                graphicsObject.PolygonalIndexes.Add(element);
+                parsedGraphicsObject.PolygonalIndexes.Add(element);
             }
         }
 
@@ -127,7 +127,7 @@ namespace CGALabs_N6_Edition
             if (_disposed) throw new ObjectDisposedException(ToString());
             if (!_isPathSet) throw new ApplicationException("File path must be setted up");
 
-            _graphicsObject = new GraphicsObject
+            _parsedGraphicsObject = new ParsedGraphicsObject
             {
                 PublicName = Path.GetFileName(_path)
             };
@@ -148,16 +148,16 @@ namespace CGALabs_N6_Edition
                 switch (parts[0])
                 {
                     case "v":
-                        ParseVertex(parts, _graphicsObject);
+                        ParseVertex(parts, _parsedGraphicsObject);
                         break;
                     case "vt":
-                        ParseVertexTexture(parts, _graphicsObject);
+                        ParseVertexTexture(parts, _parsedGraphicsObject);
                         break;
                     case "vn":
-                        ParseVertexNormal(parts, _graphicsObject);
+                        ParseVertexNormal(parts, _parsedGraphicsObject);
                         break;
                     case "f":
-                        ParsePolygonalFace(parts, _graphicsObject);
+                        ParsePolygonalFace(parts, _parsedGraphicsObject);
                         break;
                     default:
                         _logger.LogTrace($"{string.Join(' ', parts)} - were skipped from processing");
@@ -166,7 +166,7 @@ namespace CGALabs_N6_Edition
             }
 
             _logger.LogInformation(
-                $"File {_graphicsObject.PublicName} parse has been completed in {(DateTime.Now - startTime).ToString("G")}");
+                $"File {_parsedGraphicsObject.PublicName} parse has been completed in {(DateTime.Now - startTime).ToString("G")}");
         }
     }
 }

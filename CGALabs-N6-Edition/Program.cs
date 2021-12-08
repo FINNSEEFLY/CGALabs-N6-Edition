@@ -8,7 +8,7 @@ namespace CGALabs_N6_Edition
 {
     internal static class Program
     {
-        private static IHost host;
+        private static IHost _host;
 
         /// <summary>
         ///  The main entry point for the application.
@@ -18,7 +18,7 @@ namespace CGALabs_N6_Edition
         {
             ApplicationConfiguration.Initialize();
 
-            host = new HostBuilder()
+            _host = new HostBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton<Form1>();
@@ -29,7 +29,7 @@ namespace CGALabs_N6_Edition
                     logBuilder.AddNLog("nlog.config");
                 }).Build();
 
-            using var serviceScope = host.Services.CreateScope();
+            using var serviceScope = _host.Services.CreateScope();
             {
                 var services = serviceScope.ServiceProvider;
                 try

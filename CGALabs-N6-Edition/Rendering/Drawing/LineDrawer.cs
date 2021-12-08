@@ -4,7 +4,7 @@ namespace CGALabs_N6_Edition
 {
     public static class LineDrawer
     {
-        public static List<Pixel> DrawLinePoints(Pixel pixel1, Pixel pixel2)
+        public static IEnumerable<Pixel> DrawLinePoints(Pixel pixel1, Pixel pixel2)
         {
             var points = new List<Pixel>();
 
@@ -116,7 +116,7 @@ namespace CGALabs_N6_Edition
                     error -= deltaY;
                     point1.X += signX;
                 }
-                
+
                 if (error2 >= deltaX) continue;
                 error += deltaX;
                 point1.Y += signY;

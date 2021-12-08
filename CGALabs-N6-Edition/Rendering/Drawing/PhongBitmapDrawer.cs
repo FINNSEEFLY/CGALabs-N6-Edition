@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace CGALabs_N6_Edition
 {
     public class PhongBitmapDrawer : BitmapDrawer
     {
-        private PhongLighting Light { get; set; }
+        private PhongLight Light { get; set; }
 
         private int Width => _bitmap.Width;
 
@@ -20,10 +15,10 @@ namespace CGALabs_N6_Edition
         {
             _bitmap = new FastBitmap(width, height);
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
-            Light = new PhongLighting(_activeColor, Color.AliceBlue, Color.DarkGreen);
+            Light = new PhongLight(_activeColor, Color.AliceBlue, Color.DarkGreen);
         }
 
-        public Bitmap GetBitmap(List<Vector3> windowVertices, WatchModel model, Vector3 lightVector, Vector3 viewVector)
+        public Bitmap GetBitmap(List<Vector3> windowVertices, VisualizationModel model, Vector3 lightVector, Vector3 viewVector)
         {
             var width = Width;
             var height = Height;
@@ -34,24 +29,20 @@ namespace CGALabs_N6_Edition
             this._model = model;
 
 
-            DrawAllPixels(lightVector, viewVector);
+            DrawPixels(lightVector, viewVector);
 
             return _bitmap.Bitmap;
         }
 
-        private void DrawAllPixels(Vector3 lightVector, Vector3 viewVector)
+        private void DrawPixels(Vector3 lightVector, Vector3 viewVector)
         {
             var polygonsList = _model.Polygons;
 
-            Parallel.ForEach(Partitioner.Create(0, polygonsList.Count), range =>
+            polygonsList.AsParallel().ForAll(polygon =>
             {
-                for (var i = range.Item1; i < range.Item2; i++)
+                if (IsPolygonVisible(polygon))
                 {
-                    var polygon = polygonsList[i];
-                    if (IsPolygonVisible(polygon))
-                    {
-                        DrawPolygon(polygon, lightVector, viewVector);
-                    }
+                    DrawPolygon(polygon, lightVector, viewVector);
                 }
             });
         }
@@ -120,11 +111,11 @@ namespace CGALabs_N6_Edition
 
         private void DrawPixelForRasterization(List<Pixel> sidesList, Vector3 lightVector, Vector3 viewVector)
         {
-            FindMinAndMaxY(sidesList, out var minY, out var maxY);
+            SearchMinAndMaxY(sidesList, out var minY, out var maxY);
 
             for (var y = minY + 1; y < maxY; y++)
             {
-                FindStartAndEndXByY(sidesList, y, out var pixelFrom, out var pixelTo);
+                SearchStartAndEndXByY(sidesList, y, out var pixelFrom, out var pixelTo);
 
                 IEnumerable<Pixel> drawnPixels = LineDrawer.DrawLinePoints(pixelFrom, pixelTo);
 
@@ -139,9 +130,9 @@ namespace CGALabs_N6_Edition
         {
             var point = pixel.Point;
 
-            if (point.X > 0 
-                && point.X < ZBuffer.Width 
-                && point.Y > 0 
+            if (point.X > 0
+                && point.X < ZBuffer.Width
+                && point.Y > 0
                 && point.Y < ZBuffer.Height)
             {
                 if (point.Z <= ZBuffer[(int)point.X, (int)point.Y])
@@ -152,11 +143,11 @@ namespace CGALabs_N6_Edition
                     var color = Light.GetPointColor(pixel.Normal, lightVector, viewVector - world3);
 
                     ZBuffer[(int)point.X, (int)point.Y] = point.Z;
-                    _bitmap.SetPixel((int)point.X, (int)point.Y,color);
+                    _bitmap.SetPixel((int)point.X, (int)point.Y, color);
                 }
             }
         }
 
-        
+
     }
 }

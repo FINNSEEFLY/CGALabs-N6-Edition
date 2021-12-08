@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace CGALabs_N6_Edition
 {
-    public class LambertLighting
+    public class LambertLight
     {
         // Цвет рассеянного света
         private readonly Color objectColor;
 
         // Коэффициент рассеянного освещения
-        private readonly float kd = 0.9f;  
+        private readonly float kd = 0.9f;
 
-        public LambertLighting(Color color)
+        public LambertLight(Color color)
         {
             objectColor = color;
         }
@@ -28,15 +24,15 @@ namespace CGALabs_N6_Edition
                 Vector3.Dot(normal, light),
                 0
             );
-            var red = 
-                (Math.Round(objectColor.R * coefficient) <= 255) 
-                    ? (byte)Math.Round(objectColor.R * coefficient) 
+            var red =
+                (Math.Round(objectColor.R * coefficient) <= 255)
+                    ? (byte)Math.Round(objectColor.R * coefficient)
                     : (byte)255;
-            var green = 
-                (Math.Round(objectColor.G * coefficient) <= 255) 
-                    ? (byte)Math.Round(objectColor.G * coefficient) 
+            var green =
+                (Math.Round(objectColor.G * coefficient) <= 255)
+                    ? (byte)Math.Round(objectColor.G * coefficient)
                     : (byte)255;
-            var blue = 
+            var blue =
                 (Math.Round(objectColor.B * coefficient) <= 255)
                     ? (byte)Math.Round(objectColor.B * coefficient)
                     : (byte)255;

@@ -31,7 +31,7 @@ namespace CGALabs_N6_Edition
 
         public void RotateZ(int zOffset)
         {
-            Camera.Eye = Vector3.Transform(Camera.Eye, Matrix4x4.CreateRotationZ(_sensitivity * zOffset));
+            Camera.Eye = new Vector3(Camera.Eye.X, Camera.Eye.Y, Camera.Eye.Z + _sensitivity * zOffset);
         }
     }
 }

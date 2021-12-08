@@ -11,7 +11,7 @@ namespace CGALabs_N6_Edition
 
         private int _activeColorArgb;
 
-        protected WatchModel _model;
+        protected VisualizationModel _model;
 
         private int Width => _bitmap.Width;
         private int Height => _bitmap.Height;
@@ -30,14 +30,14 @@ namespace CGALabs_N6_Edition
             return result;
         }
 
-        protected static void FindMinAndMaxY(List<Pixel> sidesList, out int min, out int max)
+        protected static void SearchMinAndMaxY(List<Pixel> sidesList, out int min, out int max)
         {
             var list = sidesList.OrderBy(x => (int)x.Point.Y).ToList();
             min = (int)list[0].Point.Y;
             max = (int)list[sidesList.Count - 1].Point.Y;
         }
 
-        public Bitmap GetBitmap(List<Vector3> windowVertices, WatchModel watchModel)
+        public Bitmap GetBitmap(List<Vector3> windowVertices, VisualizationModel visualizationModel)
         {
             var width = Width;
             var height = Height;
@@ -46,12 +46,12 @@ namespace CGALabs_N6_Edition
 
             _windowVertices = windowVertices;
 
-            watchModel.Polygons.AsParallel().ForAll(DrawLines);
+            visualizationModel.Polygons.AsParallel().ForAll(DrawLines);
 
             return _bitmap.Bitmap;
         }
 
-        protected static void FindStartAndEndXByY(List<Pixel> sidesList, int y, out Pixel pixelFrom, out Pixel pixelTo)
+        protected static void SearchStartAndEndXByY(List<Pixel> sidesList, int y, out Pixel pixelFrom, out Pixel pixelTo)
         {
             if (sidesList == null) throw new ArgumentNullException(nameof(sidesList));
             var sameYList = sidesList

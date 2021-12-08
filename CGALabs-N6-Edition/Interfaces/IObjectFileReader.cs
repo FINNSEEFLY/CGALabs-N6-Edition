@@ -6,6 +6,6 @@ namespace CGALabs_N6_Edition.Interfaces
     {
         public void LoadGraphicsObject();
         public void SetObjectPath(string filePath);
-        public GraphicsObject GetGraphicsObject();
+        public ParsedGraphicsObject GetGraphicsObject();
     }
 }
