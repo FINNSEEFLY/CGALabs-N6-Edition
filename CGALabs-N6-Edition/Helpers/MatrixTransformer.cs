@@ -16,7 +16,7 @@ namespace CGALabs_N6_Edition.Helpers
             Height = height;
         }
 
-        public List<Vector3> ApplyTransformations(CameraModel camera, VisualizationModel model)
+        public List<Vector3> ApplyTransformations(Camera.Camera camera, VisualizationModel model)
         {
             // Мировые координаты
             var worldMatrix = CreateWorldSpace(model);
@@ -56,7 +56,7 @@ namespace CGALabs_N6_Edition.Helpers
                    * Matrix4x4.CreateRotationZ(vector.Z);
         }
 
-        private static Matrix4x4 CreateViewSpace(CameraModel camera)
+        private static Matrix4x4 CreateViewSpace(Camera.Camera camera)
         {
             return Matrix4x4.CreateLookAt(camera.Eye, camera.Target, camera.Up);
         }

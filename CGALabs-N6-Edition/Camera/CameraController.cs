@@ -5,14 +5,14 @@ namespace CGALabs_N6_Edition.Camera
 {
     public class CameraController
     {
-        public CameraModel Camera { get; private set; }
+        public Camera Camera { get; private set; }
 
         private const float Sensitivity = 0.01f;
         private const float ZoomCoefficient = 20;
 
         public CameraController()
         {
-            Camera = new CameraModel(
+            Camera = new Camera(
                 new Vector3(0, 0, 200),
                 new Vector3(0, 0, 0),
                 new Vector3(0, 1, 0),

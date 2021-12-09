@@ -17,18 +17,16 @@ namespace CGALabs_N6_Edition
         private ParsedGraphicsObject _parsedGraphicsObject;
         private MatrixTransformer _transformer;
         private Rasterizer _rasterizer;
-        private CameraController _cameraController;
+        private readonly CameraController _cameraController;
         private VisualizationModel _visualizationModel;
         private readonly int _timerInterval = 6; // 6 - 144 FPS | 16 - 60 FPS | 33 - 30 FPS
         private readonly Timer _timer;
         private bool _isMouseDown = false;
         private Point _mousePosition = new(0, 0);
 
-        // private PhongBitmapDrawer _phongBitmapDrawer;
-        //private LambertBitmapDrawer _lambertBitmapDrawer;
         private TextureRasterizer _textureRasterizer;
 
-        private LightController _lightSourceController;
+        private readonly LightController _lightController;
 
         private List<Vector3> _points = new();
 
@@ -49,11 +47,9 @@ namespace CGALabs_N6_Edition
             InitializeComponent();
 
             _cameraController = new CameraController();
-            _lightSourceController = new LightController();
+            _lightController = new LightController();
             _transformer = new MatrixTransformer(Size.Width, Size.Height);
-            // _bitmapDrawer = new BitmapDrawer(Size.Width, Size.Height);
-            //_lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
-            // _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
+
             _textureRasterizer = new TextureRasterizer(Size.Width, Size.Height);
             _timer = new Timer
             {
@@ -80,19 +76,16 @@ namespace CGALabs_N6_Edition
             var startTime = DateTime.Now;
 
             _points = _transformer.ApplyTransformations(_cameraController.Camera, _visualizationModel);
-            // this.BackgroundImage = _bitmapDrawer.GetBitmap(_points, _watchModel);
-            /*this.BackgroundImage = _phongBitmapDrawer.GetBitmap(_points, _visualizationModel,
-            _lightSourceManipulator.LightSourcePosition, _cameraManipulator.Camera.Eye);*/
+
             this.BackgroundImage = _textureRasterizer.GetBitmap(
                 _points,
                 _visualizationModel,
-                _lightSourceController.LightSourcePosition,
+                _lightController.LightSourcePosition,
                 _cameraController.Camera.Eye
             );
 
-            //this.BackgroundImage = _lambertBitmapDrawer.GetBitmap(_points, _watchModel, _lightSourceManipulator.LightSource);
             var timeForDrawing = (DateTime.Now - startTime).TotalMilliseconds;
-            var interval = (int)(_timerInterval - timeForDrawing);
+            var interval = (int) (_timerInterval - timeForDrawing);
             _timer.Interval = interval <= 0 ? 1 : interval;
 
             _timer.Start();
@@ -134,29 +127,27 @@ namespace CGALabs_N6_Edition
             var directory = Path.GetDirectoryName(filePath);
             _parsedGraphicsObject = _objectFileReader.GetGraphicsObject();
             _visualizationModel = new VisualizationModel(_parsedGraphicsObject);
-            var path = Directory.EnumerateFiles(directory, "*.diffuse").FirstOrDefault();
-            if (File.Exists(path))
-            {
-                FastBitmap diffuseTexture = new(path);
-                _visualizationModel.DiffuseTexture = diffuseTexture;
-            }
-
-            path = Directory.EnumerateFiles(directory, "*.normal").FirstOrDefault();
-            if (File.Exists(path))
-            {
-                FastBitmap normalTexture = new(path);
-                _visualizationModel.NormalsTexture = normalTexture;
-            }
-
-            path = Directory.EnumerateFiles(directory, "*.reflect").FirstOrDefault();
-            if (File.Exists(path))
-            {
-                FastBitmap reflectionTexture = new(path);
-                _visualizationModel.ReflectionTexture = reflectionTexture;
-            }
+            LoadTextureFiles(directory);
 
 
             MessageBox.Show("Object has been read");
+        }
+
+        private void LoadTextureFiles(string dirPath)
+        {
+            var diffusePath = Directory.EnumerateFiles(dirPath, "*.diffuse").FirstOrDefault();
+            var reflectPath = Directory.EnumerateFiles(dirPath, "*.reflect").FirstOrDefault();
+            var normalPath = Directory.EnumerateFiles(dirPath, "*.normal").FirstOrDefault();
+
+            _visualizationModel.DiffuseTexture =
+                (diffusePath != null && File.Exists(diffusePath)) ? new FastBitmap(diffusePath) : null;
+
+            _visualizationModel.NormalsTexture =
+                (normalPath != null && File.Exists(normalPath)) ? new FastBitmap(normalPath) : null;
+
+            _visualizationModel.ReflectionTexture = 
+                (reflectPath != null && File.Exists(reflectPath)) ? new FastBitmap(reflectPath) : null;
+
         }
 
         private void UpdateSize()
@@ -205,8 +196,8 @@ namespace CGALabs_N6_Edition
                 var yOffset = _mousePosition.Y - e.Y;
                 SaveMousePosition(e);
 
-                _lightSourceController.RotateX(yOffset);
-                _lightSourceController.RotateY(xOffset);
+                _lightController.RotateX(yOffset);
+                _lightController.RotateY(xOffset);
             }
         }
 
@@ -221,22 +212,22 @@ namespace CGALabs_N6_Edition
             switch (e.KeyCode)
             {
                 case Keys.Q:
-                    {
-                        _isCameraControl = !_isCameraControl;
-                        var formMode = _isCameraControl ? CameraControl : LightControl;
-                        this.Text = $"{_formTitle} | {formMode}";
-                        break;
-                    }
+                {
+                    _isCameraControl = !_isCameraControl;
+                    var formMode = _isCameraControl ? CameraControl : LightControl;
+                    this.Text = $"{_formTitle} | {formMode}";
+                    break;
+                }
                 case Keys.W:
-                    {
-                        _cameraController.Zoom();
-                        break;
-                    }
+                {
+                    _cameraController.Zoom();
+                    break;
+                }
                 case Keys.S:
-                    {
-                        _cameraController.Zoom(true);
-                        break;
-                    }
+                {
+                    _cameraController.Zoom(true);
+                    break;
+                }
             }
         }
     }
