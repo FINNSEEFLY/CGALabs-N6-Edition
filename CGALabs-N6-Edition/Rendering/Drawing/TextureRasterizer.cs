@@ -34,13 +34,13 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             this._windowVertices = windowVertices;
             this.VisualizationModel = model;
 
-            RasterizePixels(lightVector, viewVector);
+            RasterizePolygons(lightVector, viewVector);
 
 
             return _bitmap.Bitmap;
         }
 
-        private void RasterizePixels(Vector3 lightVector, Vector3 viewVector)
+        private void RasterizePolygons(Vector3 lightVector, Vector3 viewVector)
         {
             var polygonsList = VisualizationModel.Polygons;
 
@@ -64,7 +64,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
 
             DrawLine(vertexIndexes.Count - 1, 0, vertexIndexes, sidesList, lightVector, viewVector);
 
-            RasterizePixel(sidesList, lightVector, viewVector);
+            RasterizePixels(sidesList, lightVector, viewVector);
         }
 
         private void DrawLine(
@@ -110,7 +110,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                 Texture = VisualizationModel.Textures[textureIndexTo]
             };
 
-            var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
+            var drawnPixels = LineCreator.CreateLinePoints(pixelFrom, pixelTo);
 
             foreach (var pixel in drawnPixels)
             {
@@ -120,7 +120,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             }
         }
 
-        private void RasterizePixel(List<Pixel> sidesList, Vector3 lightVector, Vector3 viewVector)
+        private void RasterizePixels(List<Pixel> sidesList, Vector3 lightVector, Vector3 viewVector)
         {
             SearchMinAndMaxY(sidesList, out var minY, out var maxY);
 
@@ -128,7 +128,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             {
                 SearchStartAndEndXByY(sidesList, y, out var pixelFrom, out var pixelTo);
 
-                var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
+                var drawnPixels = LineCreator.CreateLinePoints(pixelFrom, pixelTo);
 
                 foreach (var pixel in drawnPixels)
                 {
@@ -137,31 +137,28 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             }
         }
 
-        protected void DrawPixel(Pixel pixel, Vector3 lightVector, Vector3 viewVector)
+        private void DrawPixel(Pixel pixel, Vector3 lightVector, Vector3 viewVector)
         {
             var point = pixel.Point;
 
-            if (point.X > 0
-                && point.X < ZBuffer.Width
-                && point.Y > 0
-                && point.Y < ZBuffer.Height)
-            {
-                if (point.Z <= ZBuffer[(int)point.X, (int)point.Y])
-                {
-                    var world4 = pixel.World / pixel.World.W;
-                    var world3 = new Vector3(world4.X, world4.Y, world4.Z);
+            if (!(point.X > 0) || !(point.X < ZBuffer.Width) || !(point.Y > 0) || !(point.Y < ZBuffer.Height)) 
+                return;
 
-                    var color = PhongLight.CalculatePixelColorForTexture(
-                        pixel,
-                        lightVector,
-                        viewVector - world3,
-                        VisualizationModel
-                    );
+            if (!(point.Z <= ZBuffer[(int) point.X, (int) point.Y])) return;
 
-                    ZBuffer[(int)point.X, (int)point.Y] = point.Z;
-                    _bitmap.SetPixel((int)point.X, (int)point.Y, color);
-                }
-            }
+
+            var world4 = pixel.World / pixel.World.W;
+            var world3 = new Vector3(world4.X, world4.Y, world4.Z);
+
+            var color = PhongLight.CalculatePixelColorForTexture(
+                pixel,
+                lightVector,
+                viewVector - world3,
+                VisualizationModel
+            );
+
+            ZBuffer[(int)point.X, (int)point.Y] = point.Z;
+            _bitmap.SetPixel((int)point.X, (int)point.Y, color);
         }
     }
 }

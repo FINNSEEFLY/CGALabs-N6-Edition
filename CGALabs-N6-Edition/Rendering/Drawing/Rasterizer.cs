@@ -85,7 +85,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             var pointFrom = GetPoint(vertexFrom);
             var pointTo = GetPoint(vertexTo);
 
-            LineCreator.DrawLinePoints(pointFrom, pointTo, this);
+            LineCreator.CreateLinePoints(pointFrom, pointTo, this);
         }
 
         public void DrawPoint(Point point)

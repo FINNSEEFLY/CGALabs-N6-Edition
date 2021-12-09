@@ -105,33 +105,34 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
 
         public Vector3 BilinearInterpolation(float x, float y)
         {
-            var x1 = (int)x;
-            var y1 = (int)y;
+            var x1 = (int) x;
+            var y1 = (int) y;
 
             var deltaX = x - x1;
             var deltaY = y - y1;
 
-            switch (deltaX)
+            switch (deltaX, deltaY)
             {
-                case 0 when deltaY == 0:
+                // deltaX==0 && deltaY==0
+                case (0, 0):
                     return GetPixelRgbVector(x1, y1);
-                case 0:
+                // deltaX==0 && deltaY!=0
+                case (0, _):
                     return (-deltaY + 1) * GetPixelRgbVector(x1, y1)
                            + deltaY * GetPixelRgbVector(x1, y1 + 1);
-            }
-
-            if (deltaY == 0)
-            {
-                return (-deltaX + 1) * GetPixelRgbVector(x1, y1)
-                       + deltaX * GetPixelRgbVector(x1 + 1, y1);
-            }
-
-            var y1Vector = (-deltaX + 1) * GetPixelRgbVector(x1, y1)
+                // deltaX!=0 && deltaY==0
+                case (_, 0):
+                    return (-deltaX + 1) * GetPixelRgbVector(x1, y1)
                            + deltaX * GetPixelRgbVector(x1 + 1, y1);
-            var y2Vector = (-deltaX + 1) * GetPixelRgbVector(x1, y1 + 1)
-                           + deltaX * GetPixelRgbVector(x1 + 1, y1 + 1);
-            return (-deltaX + 1) * y1Vector
-                   + deltaX * y2Vector;
+                // deltaX!=0 && deltaY!=0
+                case (_, _):
+                    var y1Vector = (-deltaX + 1) * GetPixelRgbVector(x1, y1)
+                                   + deltaX * GetPixelRgbVector(x1 + 1, y1);
+                    var y2Vector = (-deltaX + 1) * GetPixelRgbVector(x1, y1 + 1)
+                                   + deltaX * GetPixelRgbVector(x1 + 1, y1 + 1);
+                    return (-deltaX + 1) * y1Vector
+                           + deltaX * y2Vector;
+            }
         }
     }
 }

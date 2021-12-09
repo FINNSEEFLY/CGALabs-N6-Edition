@@ -100,7 +100,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                 World = VisualizationModel.Vertexes[indexTo]
             };
 
-            var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
+            var drawnPixels = LineCreator.CreateLinePoints(pixelFrom, pixelTo);
 
             foreach (var pixel in drawnPixels)
             {
@@ -118,7 +118,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             {
                 SearchStartAndEndXByY(sidesList, y, out var pixelFrom, out var pixelTo);
 
-                var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
+                var drawnPixels = LineCreator.CreateLinePoints(pixelFrom, pixelTo);
 
                 foreach (var pixel in drawnPixels)
                 {

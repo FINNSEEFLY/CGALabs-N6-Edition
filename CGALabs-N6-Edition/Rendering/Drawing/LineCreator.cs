@@ -4,7 +4,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
 {
     public static class LineCreator
     {
-        public static IEnumerable<Pixel> DrawLinePoints(Pixel pixel1, Pixel pixel2)
+        public static IEnumerable<Pixel> CreateLinePoints(Pixel pixel1, Pixel pixel2)
         {
             var points = new List<Pixel>();
 
@@ -92,7 +92,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
 
             return points;
         }
-        public static void DrawLinePoints(Point point1, Point point2, Rasterizer rasterizer)
+        public static void CreateLinePoints(Point point1, Point point2, Rasterizer rasterizer)
         {
             var signX = 1;
             var signY = 1;

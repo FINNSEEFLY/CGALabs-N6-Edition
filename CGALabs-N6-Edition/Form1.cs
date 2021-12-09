@@ -155,10 +155,6 @@ namespace CGALabs_N6_Edition
             _transformer.Height = Size.Height;
             _transformer.Width = Size.Width;
 
-            // _bitmapDrawer = new BitmapDrawer(Size.Width, Size.Height);
-
-            // _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
-            // _lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
             _textureRasterizer = new TextureRasterizer(Size.Width, Size.Height);
         }
 
