@@ -1,7 +1,7 @@
-﻿using System.Numerics;
-using CGALabs_N6_Edition.Helpers;
+﻿using CGALabs_N6_Edition.Helpers;
 using CGALabs_N6_Edition.Models;
 using CGALabs_N6_Edition.Rendering.Drawing;
+using System.Numerics;
 
 namespace CGALabs_N6_Edition.Rendering.Light
 {
@@ -9,17 +9,22 @@ namespace CGALabs_N6_Edition.Rendering.Light
     {
         // Цвет рассеянного света
         private readonly Color _objectColor;
+
         // Цвет зеркального света
         private readonly Color _lightColor;
+
         // Цвет фонового освещения
         private readonly Color _ambientColor;
+
         // Коэффициент блеска поверхности
         private const int Alpha = 32;
 
         // Коэффициент фонового освещения
         private const float AmbientCoefficient = 0.3f;
+
         // Коэффициент рассеянного освещения
         private const float DiffuseCoefficient = 0.9f;
+
         // Коэффициент зеркального освещения
         private const float ReflectiveCoefficient = 0.7f;
 
@@ -39,22 +44,23 @@ namespace CGALabs_N6_Edition.Rendering.Light
             var lightVector = Vector3.Normalize(light);
             var viewVector = Vector3.Normalize(view);
 
-            var Ia = AmbientCoefficient * _ambientColor.ToVector3();
-            var Id = DiffuseCoefficient * Math.Max(Vector3.Dot(normalVector, lightVector), 0) * _objectColor.ToVector3();
+            var interpolatedAmbient = AmbientCoefficient * _ambientColor.ToVector3();
+            var interpolatedDiffuse = DiffuseCoefficient * Math.Max(Vector3.Dot(normalVector, lightVector), 0) *
+                                      _objectColor.ToVector3();
 
             var reflectVector = Vector3.Normalize(Vector3.Reflect(-lightVector, normalVector));
 
-            var Is = ReflectiveCoefficient
-                     * (float)Math.Pow(
-                         Math.Max(
-                             0,
-                             Vector3.Dot(reflectVector, viewVector)
-                         ),
-                         Alpha
-                     )
-                     * _lightColor.ToVector3();
+            var interpolatedReflection = ReflectiveCoefficient
+                                         * (float)Math.Pow(
+                                             Math.Max(
+                                                 0,
+                                                 Vector3.Dot(reflectVector, viewVector)
+                                             ),
+                                             Alpha
+                                         )
+                                         * _lightColor.ToVector3();
 
-            var color = Ia + Id + Is;
+            var color = interpolatedAmbient + interpolatedDiffuse + interpolatedReflection;
 
             var red = color.X <= 255 ? (byte)color.X : (byte)255;
             var green = color.Y <= 255 ? (byte)color.Y : (byte)255;
@@ -66,8 +72,8 @@ namespace CGALabs_N6_Edition.Rendering.Light
         public static Color CalculatePixelColorForTexture(
             Pixel pixel,
             Vector3 light,
-           Vector3 view,
-           VisualizationModel model
+            Vector3 view,
+            VisualizationModel model
         )
         {
             var normalVector = Vector3.Normalize(pixel.Normal);
@@ -116,10 +122,10 @@ namespace CGALabs_N6_Edition.Rendering.Light
                 );
 
                 interpolatedReflection = model.ReflectionTexture.BilinearInterpolation(x, y)
-                    * ReflectiveCoefficient
-                    * (float)Math.Pow(Math.Max(0, Vector3.Dot(reflectionVector, viewVector)),
-                        Alpha
-                    );
+                                         * ReflectiveCoefficient
+                                         * (float)Math.Pow(Math.Max(0, Vector3.Dot(reflectionVector, viewVector)),
+                                             Alpha
+                                         );
             }
             else
             {
@@ -129,7 +135,7 @@ namespace CGALabs_N6_Edition.Rendering.Light
             var color = interpolatedAmbient + interpolatedDiffuse + interpolatedReflection;
 
             var r = color.X <= 255 ? (byte)color.X : (byte)255;
-            var g = color.Y <= 255 ? (byte)color.Y : (byte)255; 
+            var g = color.Y <= 255 ? (byte)color.Y : (byte)255;
             var b = color.Z <= 255 ? (byte)color.Z : (byte)255;
 
             return Color.FromArgb(255, r, g, b);

@@ -1,11 +1,11 @@
-using CGALabs_N6_Edition.Interfaces;
-using CGALabs_N6_Edition.Models;
-using Microsoft.Extensions.Logging;
-using System.Numerics;
 using CGALabs_N6_Edition.Camera;
 using CGALabs_N6_Edition.Helpers;
+using CGALabs_N6_Edition.Interfaces;
+using CGALabs_N6_Edition.Models;
 using CGALabs_N6_Edition.Rendering.Drawing;
 using CGALabs_N6_Edition.Rendering.Light;
+using Microsoft.Extensions.Logging;
+using System.Numerics;
 using Timer = System.Windows.Forms.Timer;
 
 namespace CGALabs_N6_Edition
@@ -92,7 +92,7 @@ namespace CGALabs_N6_Edition
 
             //this.BackgroundImage = _lambertBitmapDrawer.GetBitmap(_points, _watchModel, _lightSourceManipulator.LightSource);
             var timeForDrawing = (DateTime.Now - startTime).TotalMilliseconds;
-            var interval = (int) (_timerInterval - timeForDrawing);
+            var interval = (int)(_timerInterval - timeForDrawing);
             _timer.Interval = interval <= 0 ? 1 : interval;
 
             _timer.Start();
@@ -221,22 +221,22 @@ namespace CGALabs_N6_Edition
             switch (e.KeyCode)
             {
                 case Keys.Q:
-                {
-                    _isCameraControl = !_isCameraControl;
-                    var formMode = _isCameraControl ? CameraControl : LightControl;
-                    this.Text = $"{_formTitle} | {formMode}";
-                    break;
-                }
+                    {
+                        _isCameraControl = !_isCameraControl;
+                        var formMode = _isCameraControl ? CameraControl : LightControl;
+                        this.Text = $"{_formTitle} | {formMode}";
+                        break;
+                    }
                 case Keys.W:
-                {
-                    _cameraController.Zoom();
-                    break;
-                }
+                    {
+                        _cameraController.Zoom();
+                        break;
+                    }
                 case Keys.S:
-                {
-                    _cameraController.Zoom(true);
-                    break;
-                }
+                    {
+                        _cameraController.Zoom(true);
+                        break;
+                    }
             }
         }
     }

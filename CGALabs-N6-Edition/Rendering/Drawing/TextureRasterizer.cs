@@ -1,7 +1,6 @@
-﻿using System.Collections.Concurrent;
-using System.Numerics;
-using CGALabs_N6_Edition.Models;
+﻿using CGALabs_N6_Edition.Models;
 using CGALabs_N6_Edition.Rendering.Light;
+using System.Numerics;
 
 namespace CGALabs_N6_Edition.Rendering.Drawing
 {
@@ -76,14 +75,14 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             Vector3 lightVector,
             Vector3 viewVector)
         {
-            var indexFrom = (int) indexes[from].X - 1;
-            var indexTo = (int) indexes[to].X - 1;
+            var indexFrom = (int)indexes[from].X - 1;
+            var indexTo = (int)indexes[to].X - 1;
 
-            var indexNormalFrom = (int) indexes[from].Z - 1;
-            var indexNormalTo = (int) indexes[to].Z - 1;
+            var indexNormalFrom = (int)indexes[from].Z - 1;
+            var indexNormalTo = (int)indexes[to].Z - 1;
 
-            var textureIndexFrom = (int) indexes[from].Y - 1;
-            var textureIndexTo = (int) indexes[to].Y - 1;
+            var textureIndexFrom = (int)indexes[from].Y - 1;
+            var textureIndexTo = (int)indexes[to].Y - 1;
 
             var vertexFrom = _windowVertices[indexFrom];
             var vertexTo = _windowVertices[indexTo];
@@ -91,8 +90,8 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             var pixelFrom = new Pixel()
             {
                 Point = new Vector3(
-                    (int) Math.Round(vertexFrom.X),
-                    (int) Math.Round(vertexFrom.Y),
+                    (int)Math.Round(vertexFrom.X),
+                    (int)Math.Round(vertexFrom.Y),
                     vertexFrom.Z
                 ),
                 Normal = VisualizationModel.Normals[indexNormalFrom],
@@ -102,8 +101,8 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             var pixelTo = new Pixel()
             {
                 Point = new Vector3(
-                    (int) Math.Round(vertexTo.X),
-                    (int) Math.Round(vertexTo.Y),
+                    (int)Math.Round(vertexTo.X),
+                    (int)Math.Round(vertexTo.Y),
                     vertexTo.Z
                 ),
                 Normal = VisualizationModel.Normals[indexNormalTo],
@@ -147,7 +146,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                 && point.Y > 0
                 && point.Y < ZBuffer.Height)
             {
-                if (point.Z <= ZBuffer[(int) point.X, (int) point.Y])
+                if (point.Z <= ZBuffer[(int)point.X, (int)point.Y])
                 {
                     var world4 = pixel.World / pixel.World.W;
                     var world3 = new Vector3(world4.X, world4.Y, world4.Z);
@@ -159,8 +158,8 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                         VisualizationModel
                     );
 
-                    ZBuffer[(int) point.X, (int) point.Y] = point.Z;
-                    _bitmap.SetPixel((int) point.X, (int) point.Y, color);
+                    ZBuffer[(int)point.X, (int)point.Y] = point.Z;
+                    _bitmap.SetPixel((int)point.X, (int)point.Y, color);
                 }
             }
         }

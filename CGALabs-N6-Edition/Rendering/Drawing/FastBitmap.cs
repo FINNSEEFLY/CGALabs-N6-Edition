@@ -88,7 +88,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
         private Color GetPixel(int x, int y)
         {
             var index = x + (y * Width);
-            var color = Color.FromArgb(Bits[index-1]);
+            var color = Color.FromArgb(Bits[index - 1]);
             return color;
         }
 
@@ -105,8 +105,8 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
 
         public Vector3 BilinearInterpolation(float x, float y)
         {
-            var x1 = (int) x;
-            var y1 = (int) y;
+            var x1 = (int)x;
+            var y1 = (int)y;
 
             var deltaX = x - x1;
             var deltaY = y - y1;

@@ -1,7 +1,6 @@
-﻿using System.Numerics;
-using CGALabs_N6_Edition.Models;
-using CGALabs_N6_Edition.Rendering.Light;
+﻿using CGALabs_N6_Edition.Models;
 using CGALabs_N6_Edition.Rendering.Light.Unused;
+using System.Numerics;
 
 namespace CGALabs_N6_Edition.Rendering.Drawing
 {
@@ -65,9 +64,9 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
 
         private Color GetColorForPolygon(List<Vector3> polygon, Vector3 lightVector)
         {
-            var colors = polygon.Select(index => (int) index.Z - 1)
+            var colors = polygon.Select(index => (int)index.Z - 1)
                                           .Select(normalIndex => Light
-                                                                    .GetPointColor(VisualizationModel.Normals[normalIndex], 
+                                                                    .GetPointColor(VisualizationModel.Normals[normalIndex],
                                                                                     lightVector))
                                           .ToList();
 
@@ -81,8 +80,8 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             Color color,
             ICollection<Pixel> sidesList)
         {
-            var indexFrom = (int) indexes[from].X - 1;
-            var indexTo = (int) indexes[to].X - 1;
+            var indexFrom = (int)indexes[from].X - 1;
+            var indexTo = (int)indexes[to].X - 1;
 
             var vertexFrom = _windowVertices[indexFrom];
             var vertexTo = _windowVertices[indexTo];
@@ -90,15 +89,15 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             var pixelFrom = new Pixel()
             {
                 Point = new Vector3(
-                    (int) Math.Round(vertexFrom.X),
-                    (int) Math.Round(vertexFrom.Y),
+                    (int)Math.Round(vertexFrom.X),
+                    (int)Math.Round(vertexFrom.Y),
                     vertexFrom.Z)
             };
             var pixelTo = new Pixel()
             {
                 Point = new Vector3(
-                    (int) Math.Round(vertexTo.X),
-                    (int) Math.Round(vertexTo.Y),
+                    (int)Math.Round(vertexTo.X),
+                    (int)Math.Round(vertexTo.Y),
                     vertexTo.Z)
             };
 
@@ -138,10 +137,10 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                 && point.Y > 0
                 && point.Y < ZBuffer.Height)
             {
-                if (point.Z <= ZBuffer[(int) point.X, (int) point.Y])
+                if (point.Z <= ZBuffer[(int)point.X, (int)point.Y])
                 {
-                    ZBuffer[(int) point.X, (int) point.Y] = point.Z;
-                    _bitmap.SetPixel((int) point.X, (int) point.Y, color);
+                    ZBuffer[(int)point.X, (int)point.Y] = point.Z;
+                    _bitmap.SetPixel((int)point.X, (int)point.Y, color);
                 }
             }
         }

@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using CGALabs_N6_Edition.Helpers;
+﻿using CGALabs_N6_Edition.Helpers;
+using System.Numerics;
 
 namespace CGALabs_N6_Edition.Camera
 {

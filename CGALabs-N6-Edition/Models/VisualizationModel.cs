@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using CGALabs_N6_Edition.Rendering.Drawing;
+﻿using CGALabs_N6_Edition.Rendering.Drawing;
+using System.Numerics;
 
 namespace CGALabs_N6_Edition.Models
 {

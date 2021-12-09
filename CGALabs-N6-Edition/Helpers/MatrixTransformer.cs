@@ -1,7 +1,7 @@
-﻿using System.Collections.Concurrent;
-using System.Numerics;
-using CGALabs_N6_Edition.Camera;
+﻿using CGALabs_N6_Edition.Camera;
 using CGALabs_N6_Edition.Models;
+using System.Collections.Concurrent;
+using System.Numerics;
 
 namespace CGALabs_N6_Edition.Helpers
 {
