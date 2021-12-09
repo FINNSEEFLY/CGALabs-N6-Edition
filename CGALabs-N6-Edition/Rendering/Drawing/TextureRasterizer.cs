@@ -17,7 +17,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
         {
             _bitmap = new FastBitmap(width, height);
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
-            Light = new PhongLight(ActiveColor, Color.Yellow, Color.DodgerBlue);
+            Light = new PhongLight(ActiveColor, Color.Wheat, Color.Azure);
         }
 
         public Bitmap GetBitmap(
@@ -35,25 +35,25 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             this._windowVertices = windowVertices;
             this.VisualizationModel = model;
 
-            DrawAllPixels(lightVector, viewVector);
+            RasterizePixels(lightVector, viewVector);
 
 
             return _bitmap.Bitmap;
         }
 
-        private void DrawAllPixels(Vector3 lightVector, Vector3 viewVector)
+        private void RasterizePixels(Vector3 lightVector, Vector3 viewVector)
         {
             var polygonsList = VisualizationModel.Polygons;
 
-            /*polygonsList.AsParallel().ForAll(polygon =>
+            polygonsList.AsParallel().ForAll(polygon =>
             {
                 if (IsPolygonVisible(polygon))
                 {
-                    DrawPoligon(polygon, lightVector, viewVector);
+                    RasterizePolygon(polygon, lightVector, viewVector);
                 }
-            });*/
+            });
 
-            Parallel.ForEach(
+            /*Parallel.ForEach(
                 Partitioner.Create(0, polygonsList.Count),
                 range =>
                 {
@@ -66,10 +66,10 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                         }
                     }
                 }
-            );
+            );*/
         }
 
-        protected void DrawPoligon(List<Vector3> vertexIndexes, Vector3 lightVector, Vector3 viewVector)
+        private void RasterizePolygon(IReadOnlyList<Vector3> vertexIndexes, Vector3 lightVector, Vector3 viewVector)
         {
             var sidesList = new List<Pixel>();
 
@@ -80,14 +80,14 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
 
             DrawLine(vertexIndexes.Count - 1, 0, vertexIndexes, sidesList, lightVector, viewVector);
 
-            DrawPixelForRasterization(sidesList, lightVector, viewVector);
+            RasterizePixel(sidesList, lightVector, viewVector);
         }
 
         private void DrawLine(
             int from,
             int to,
-            List<Vector3> indexes,
-            List<Pixel> sidesList,
+            IReadOnlyList<Vector3> indexes,
+            ICollection<Pixel> sidesList,
             Vector3 lightVector,
             Vector3 viewVector)
         {
@@ -136,15 +136,13 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
             }
         }
 
-        protected void DrawPixelForRasterization(List<Pixel> sidesList, Vector3 lightVector, Vector3 viewVector)
+        private void RasterizePixel(List<Pixel> sidesList, Vector3 lightVector, Vector3 viewVector)
         {
-            int minY, maxY;
-            Pixel pixelFrom, pixelTo;
-            SearchMinAndMaxY(sidesList, out minY, out maxY);
+            SearchMinAndMaxY(sidesList, out var minY, out var maxY);
 
             for (var y = minY + 1; y < maxY; y++)
             {
-                SearchStartAndEndXByY(sidesList, y, out pixelFrom, out pixelTo);
+                SearchStartAndEndXByY(sidesList, y, out var pixelFrom, out var pixelTo);
 
                 var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
 
@@ -169,7 +167,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                     var world4 = pixel.World / pixel.World.W;
                     var world3 = new Vector3(world4.X, world4.Y, world4.Z);
 
-                    var color = PhongLight.GetPointColorWithTexture(
+                    var color = PhongLight.CalculatePixelColorForTexture(
                         pixel.Normal,
                         lightVector,
                         viewVector - world3,

@@ -32,7 +32,7 @@ namespace CGALabs_N6_Edition.Rendering.Light
             this._ambientColor = ambientColor;
         }
 
-        public Color GetPointColor(Vector3 normal, Vector3 light, Vector3 view)
+        public Color CalculatePixelColor(Vector3 normal, Vector3 light, Vector3 view)
         {
             var normalVector = Vector3.Normalize(normal);
             var lightVector = Vector3.Normalize(light);
@@ -62,7 +62,7 @@ namespace CGALabs_N6_Edition.Rendering.Light
             return Color.FromArgb(255, red, green, blue);
         }
 
-        public static Color GetPointColorWithTexture(
+        public static Color CalculatePixelColorForTexture(
            Vector3 normal,
            Vector3 light,
            Vector3 view,

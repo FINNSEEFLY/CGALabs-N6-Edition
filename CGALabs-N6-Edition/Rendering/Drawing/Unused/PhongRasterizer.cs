@@ -141,7 +141,7 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                     var world4 = pixel.World / pixel.World.W;
                     var world3 = new Vector3(world4.X, world4.Y, world4.Z);
 
-                    var color = Light.GetPointColor(pixel.Normal, lightVector, viewVector - world3);
+                    var color = Light.CalculatePixelColor(pixel.Normal, lightVector, viewVector - world3);
 
                     ZBuffer[(int)point.X, (int)point.Y] = point.Z;
                     _bitmap.SetPixel((int)point.X, (int)point.Y, color);
