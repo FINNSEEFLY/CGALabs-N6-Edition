@@ -15,7 +15,7 @@ namespace CGALabs_N6_Edition.Camera
             Camera = new Camera(
                 new Vector3(0, 0, 200),
                 new Vector3(0, 0, 0),
-                new Vector3(0, 1, 0),
+                new Vector3(0, 100, 0),
                 AdditionalMath.ConvertDegreeToRadians(60)
             );
         }
