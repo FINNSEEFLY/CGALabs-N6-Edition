@@ -52,21 +52,6 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                     RasterizePolygon(polygon, lightVector, viewVector);
                 }
             });
-
-            /*Parallel.ForEach(
-                Partitioner.Create(0, polygonsList.Count),
-                range =>
-                {
-                    for (var i = range.Item1; i < range.Item2; i++)
-                    {
-                        var polygon = polygonsList[i];
-                        if (IsPolygonVisible(polygon))
-                        {
-                            DrawPoligon(polygon, lightVector, viewVector);
-                        }
-                    }
-                }
-            );*/
         }
 
         private void RasterizePolygon(IReadOnlyList<Vector3> vertexIndexes, Vector3 lightVector, Vector3 viewVector)
