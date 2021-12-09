@@ -1,9 +1,10 @@
-﻿using System.Collections.Concurrent;
-using System.Numerics;
+﻿using System.Numerics;
+using CGALabs_N6_Edition.Models;
+using CGALabs_N6_Edition.Rendering.Light;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Rendering.Drawing
 {
-    public class PhongBitmapDrawer : BitmapDrawer
+    public class PhongRasterizer : Rasterizer
     {
         private PhongLight Light { get; set; }
 
@@ -11,11 +12,11 @@ namespace CGALabs_N6_Edition
 
         private int Height => _bitmap.Height;
 
-        public PhongBitmapDrawer(int width, int height)
+        public PhongRasterizer(int width, int height)
         {
             _bitmap = new FastBitmap(width, height);
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
-            Light = new PhongLight(_activeColor, Color.AliceBlue, Color.DarkGreen);
+            Light = new PhongLight(ActiveColor, Color.AliceBlue, Color.DarkGreen);
         }
 
         public Bitmap GetBitmap(List<Vector3> windowVertices, VisualizationModel model, Vector3 lightVector, Vector3 viewVector)
@@ -26,7 +27,7 @@ namespace CGALabs_N6_Edition
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
 
             this._windowVertices = windowVertices;
-            this._model = model;
+            this.VisualizationModel = model;
 
 
             DrawPixels(lightVector, viewVector);
@@ -36,7 +37,7 @@ namespace CGALabs_N6_Edition
 
         private void DrawPixels(Vector3 lightVector, Vector3 viewVector)
         {
-            var polygonsList = _model.Polygons;
+            var polygonsList = VisualizationModel.Polygons;
 
             polygonsList.AsParallel().ForAll(polygon =>
             {
@@ -85,8 +86,8 @@ namespace CGALabs_N6_Edition
                     (int)Math.Round(vertexFrom.Y),
                     vertexFrom.Z
                 ),
-                Normal = _model.Normals[indexNormalFrom],
-                World = _model.Vertexes[indexFrom]
+                Normal = VisualizationModel.Normals[indexNormalFrom],
+                World = VisualizationModel.Vertexes[indexFrom]
             };
             var pixelTo = new Pixel()
             {
@@ -95,11 +96,11 @@ namespace CGALabs_N6_Edition
                     (int)Math.Round(vertexTo.Y),
                     vertexTo.Z
                 ),
-                Normal = _model.Normals[indexNormalTo],
-                World = _model.Vertexes[indexTo]
+                Normal = VisualizationModel.Normals[indexNormalTo],
+                World = VisualizationModel.Vertexes[indexTo]
             };
 
-            IEnumerable<Pixel> drawnPixels = LineDrawer.DrawLinePoints(pixelFrom, pixelTo);
+            var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
 
             foreach (var pixel in drawnPixels)
             {
@@ -117,7 +118,7 @@ namespace CGALabs_N6_Edition
             {
                 SearchStartAndEndXByY(sidesList, y, out var pixelFrom, out var pixelTo);
 
-                IEnumerable<Pixel> drawnPixels = LineDrawer.DrawLinePoints(pixelFrom, pixelTo);
+                var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
 
                 foreach (var pixel in drawnPixels)
                 {

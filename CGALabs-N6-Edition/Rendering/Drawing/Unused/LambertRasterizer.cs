@@ -1,9 +1,10 @@
-﻿using System.Collections.Concurrent;
-using System.Numerics;
+﻿using System.Numerics;
+using CGALabs_N6_Edition.Models;
+using CGALabs_N6_Edition.Rendering.Light;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Rendering.Drawing
 {
-    public class LambertBitmapDrawer : BitmapDrawer
+    public class LambertRasterizer : Rasterizer
     {
         private LambertLight Light { get; set; }
 
@@ -11,11 +12,11 @@ namespace CGALabs_N6_Edition
 
         private int Height => _bitmap.Height;
 
-        public LambertBitmapDrawer(int width, int height)
+        public LambertRasterizer(int width, int height)
         {
             _bitmap = new FastBitmap(width, height);
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
-            Light = new LambertLight(_activeColor);
+            Light = new LambertLight(ActiveColor);
         }
 
         public Bitmap GetBitmap(List<Vector3> windowVertices, VisualizationModel model, Vector3 lightVector)
@@ -26,7 +27,7 @@ namespace CGALabs_N6_Edition
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
 
             this._windowVertices = windowVertices;
-            this._model = model;
+            this.VisualizationModel = model;
 
             DrawPixels(lightVector);
 
@@ -35,7 +36,7 @@ namespace CGALabs_N6_Edition
 
         private void DrawPixels(Vector3 lightVector)
         {
-            var polygonsList = _model.Polygons;
+            var polygonsList = VisualizationModel.Polygons;
 
             polygonsList.AsParallel().ForAll(polygon =>
             {
@@ -63,16 +64,11 @@ namespace CGALabs_N6_Edition
 
         private Color GetColorForPolygon(List<Vector3> polygon, Vector3 lightVector)
         {
-            var colors = new List<Color>();
-            foreach (var index in polygon)
-            {
-                var normalIndex = (int)index.Z - 1;
-                var pointColor = Light.GetPointColor(
-                    _model.Normals[normalIndex],
-                    lightVector
-                );
-                colors.Add(pointColor);
-            }
+            var colors = polygon.Select(index => (int) index.Z - 1)
+                                          .Select(normalIndex => Light
+                                                                    .GetPointColor(VisualizationModel.Normals[normalIndex], 
+                                                                                    lightVector))
+                                          .ToList();
 
             return LambertLight.GetAverageColor(colors);
         }
@@ -84,8 +80,8 @@ namespace CGALabs_N6_Edition
             Color color,
             ICollection<Pixel> sidesList)
         {
-            var indexFrom = (int)indexes[from].X - 1;
-            var indexTo = (int)indexes[to].X - 1;
+            var indexFrom = (int) indexes[from].X - 1;
+            var indexTo = (int) indexes[to].X - 1;
 
             var vertexFrom = _windowVertices[indexFrom];
             var vertexTo = _windowVertices[indexTo];
@@ -93,19 +89,19 @@ namespace CGALabs_N6_Edition
             var pixelFrom = new Pixel()
             {
                 Point = new Vector3(
-                    (int)Math.Round(vertexFrom.X),
-                    (int)Math.Round(vertexFrom.Y),
+                    (int) Math.Round(vertexFrom.X),
+                    (int) Math.Round(vertexFrom.Y),
                     vertexFrom.Z)
             };
             var pixelTo = new Pixel()
             {
                 Point = new Vector3(
-                    (int)Math.Round(vertexTo.X),
-                    (int)Math.Round(vertexTo.Y),
+                    (int) Math.Round(vertexTo.X),
+                    (int) Math.Round(vertexTo.Y),
                     vertexTo.Z)
             };
 
-            IEnumerable<Pixel> drawnPixels = LineDrawer.DrawLinePoints(pixelFrom, pixelTo);
+            var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
 
             foreach (var pixel in drawnPixels)
             {
@@ -123,7 +119,7 @@ namespace CGALabs_N6_Edition
             {
                 SearchStartAndEndXByY(sidesList, y, out var pixelFrom, out var pixelTo);
 
-                var drawnPixels = LineDrawer.DrawLinePoints(pixelFrom, pixelTo);
+                var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
 
                 foreach (var pixel in drawnPixels)
                 {
@@ -141,10 +137,10 @@ namespace CGALabs_N6_Edition
                 && point.Y > 0
                 && point.Y < ZBuffer.Height)
             {
-                if (point.Z <= ZBuffer[(int)point.X, (int)point.Y])
+                if (point.Z <= ZBuffer[(int) point.X, (int) point.Y])
                 {
-                    ZBuffer[(int)point.X, (int)point.Y] = point.Z;
-                    _bitmap.SetPixel((int)point.X, (int)point.Y, color);
+                    ZBuffer[(int) point.X, (int) point.Y] = point.Z;
+                    _bitmap.SetPixel((int) point.X, (int) point.Y, color);
                 }
             }
         }

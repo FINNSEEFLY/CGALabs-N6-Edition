@@ -1,17 +1,18 @@
 ﻿using System.Numerics;
+using CGALabs_N6_Edition.Models;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Rendering.Drawing
 {
-    public class BitmapDrawer
+    public class Rasterizer
     {
         protected FastBitmap _bitmap;
         protected List<Vector3> _windowVertices;
-        protected readonly Color _activeColor = Color.Purple;
+        protected readonly Color ActiveColor = Color.AliceBlue;
         protected ZBuffer ZBuffer { get; set; }
 
         private int _activeColorArgb;
 
-        protected VisualizationModel _model;
+        protected VisualizationModel VisualizationModel;
 
         private int Width => _bitmap.Width;
         private int Height => _bitmap.Height;
@@ -84,7 +85,7 @@ namespace CGALabs_N6_Edition
             var pointFrom = GetPoint(vertexFrom);
             var pointTo = GetPoint(vertexTo);
 
-            LineDrawer.DrawLinePoints(pointFrom, pointTo, this);
+            LineCreator.DrawLinePoints(pointFrom, pointTo, this);
         }
 
         public void DrawPoint(Point point)

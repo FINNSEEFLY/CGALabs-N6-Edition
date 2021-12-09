@@ -1,15 +1,16 @@
 ﻿using System.Numerics;
+using CGALabs_N6_Edition.Helpers;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Camera
 {
-    public class CameraManipulator
+    public class CameraController
     {
         public CameraModel Camera { get; private set; }
 
         private const float Sensitivity = 0.01f;
-        private const float ZoomCoefficient = 50;
+        private const float ZoomCoefficient = 20;
 
-        public CameraManipulator()
+        public CameraController()
         {
             Camera = new CameraModel(
                 new Vector3(0, 0, 200),

@@ -1,13 +1,13 @@
-﻿using CGALabs_N6_Edition.Models;
-using System.Numerics;
+﻿using System.Numerics;
+using CGALabs_N6_Edition.Rendering.Drawing;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Models
 {
     public class VisualizationModel
     {
         public readonly List<Vector4> Vertexes;
-        public List<Vector3> Textures;
-        public List<Vector3> Normals;
+        public readonly List<Vector3> Textures;
+        public readonly List<Vector3> Normals;
         public readonly List<List<Vector3>> Polygons;
         public FastBitmap NormalsTexture { get; set; }
         public FastBitmap DiffuseTexture { get; set; }
@@ -17,8 +17,7 @@ namespace CGALabs_N6_Edition
         public Vector3 Rotation { get; set; }
         public Matrix4x4 WorldMatrix { get; set; }
 
-
-        public int Scale = 1;
+        public readonly int Scale = 1;
 
         public VisualizationModel(ParsedGraphicsObject parsedGraphicsObject)
         {

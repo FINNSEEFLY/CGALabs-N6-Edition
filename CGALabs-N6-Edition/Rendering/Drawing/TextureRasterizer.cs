@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Concurrent;
 using System.Numerics;
-using System.Threading.Tasks;
-using CGALabs_N6_Edition;
+using CGALabs_N6_Edition.Models;
+using CGALabs_N6_Edition.Rendering.Light;
 
-namespace CGALabs_N6_Edition.Drawing
+namespace CGALabs_N6_Edition.Rendering.Drawing
 {
-    public class TextureBitmapDrawer : BitmapDrawer
+    public class TextureRasterizer : Rasterizer
     {
         private PhongLight Light { get; set; }
 
@@ -16,11 +13,11 @@ namespace CGALabs_N6_Edition.Drawing
 
         private int Height => _bitmap.Height;
 
-        public TextureBitmapDrawer(int width, int height)
+        public TextureRasterizer(int width, int height)
         {
             _bitmap = new FastBitmap(width, height);
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
-            Light = new PhongLight(_activeColor, Color.WhiteSmoke, Color.DarkGreen);
+            Light = new PhongLight(ActiveColor, Color.Yellow, Color.DodgerBlue);
         }
 
         public Bitmap GetBitmap(
@@ -30,13 +27,13 @@ namespace CGALabs_N6_Edition.Drawing
             Vector3 viewVector
         )
         {
-            int width = Width;
-            int height = Height;
+            var width = Width;
+            var height = Height;
             _bitmap = new FastBitmap(width, height);
             ZBuffer = new ZBuffer(_bitmap.Width, _bitmap.Height);
 
             this._windowVertices = windowVertices;
-            this._model = model;
+            this.VisualizationModel = model;
 
             DrawAllPixels(lightVector, viewVector);
 
@@ -46,18 +43,26 @@ namespace CGALabs_N6_Edition.Drawing
 
         private void DrawAllPixels(Vector3 lightVector, Vector3 viewVector)
         {
-            List<List<Vector3>> poligonsList = _model.Polygons;
+            var polygonsList = VisualizationModel.Polygons;
+
+            /*polygonsList.AsParallel().ForAll(polygon =>
+            {
+                if (IsPolygonVisible(polygon))
+                {
+                    DrawPoligon(polygon, lightVector, viewVector);
+                }
+            });*/
 
             Parallel.ForEach(
-                Partitioner.Create(0, poligonsList.Count),
+                Partitioner.Create(0, polygonsList.Count),
                 range =>
                 {
-                    for (int i = range.Item1; i < range.Item2; i++)
+                    for (var i = range.Item1; i < range.Item2; i++)
                     {
-                        List<Vector3> poligon = poligonsList[i];
-                        if (IsPolygonVisible(poligon))
+                        var polygon = polygonsList[i];
+                        if (IsPolygonVisible(polygon))
                         {
-                            DrawPoligon(poligon, lightVector, viewVector);
+                            DrawPoligon(polygon, lightVector, viewVector);
                         }
                     }
                 }
@@ -66,9 +71,9 @@ namespace CGALabs_N6_Edition.Drawing
 
         protected void DrawPoligon(List<Vector3> vertexIndexes, Vector3 lightVector, Vector3 viewVector)
         {
-            List<Pixel> sidesList = new List<Pixel>();
+            var sidesList = new List<Pixel>();
 
-            for (int i = 0; i < vertexIndexes.Count - 1; i++)
+            for (var i = 0; i < vertexIndexes.Count - 1; i++)
             {
                 DrawLine(i, i + 1, vertexIndexes, sidesList, lightVector, viewVector);
             }
@@ -86,44 +91,44 @@ namespace CGALabs_N6_Edition.Drawing
             Vector3 lightVector,
             Vector3 viewVector)
         {
-            int indexFrom = (int) indexes[from].X - 1;
-            int indexTo = (int) indexes[to].X - 1;
+            var indexFrom = (int) indexes[from].X - 1;
+            var indexTo = (int) indexes[to].X - 1;
 
-            int indexNormalFrom = (int) indexes[from].Z - 1;
-            int indexNormalTo = (int) indexes[to].Z - 1;
+            var indexNormalFrom = (int) indexes[from].Z - 1;
+            var indexNormalTo = (int) indexes[to].Z - 1;
 
-            int textureIndexFrom = (int) indexes[from].Y - 1;
-            int textureIndexTo = (int) indexes[to].Y - 1;
+            var textureIndexFrom = (int) indexes[from].Y - 1;
+            var textureIndexTo = (int) indexes[to].Y - 1;
 
-            Vector3 vertexFrom = _windowVertices[indexFrom];
-            Vector3 vertexTo = _windowVertices[indexTo];
+            var vertexFrom = _windowVertices[indexFrom];
+            var vertexTo = _windowVertices[indexTo];
 
-            Pixel pixelFrom = new Pixel()
+            var pixelFrom = new Pixel()
             {
                 Point = new Vector3(
                     (int) Math.Round(vertexFrom.X),
                     (int) Math.Round(vertexFrom.Y),
                     vertexFrom.Z
                 ),
-                Normal = _model.Normals[indexNormalFrom],
-                World = _model.Vertexes[indexFrom],
-                Texture = _model.Textures[textureIndexFrom]
+                Normal = VisualizationModel.Normals[indexNormalFrom],
+                World = VisualizationModel.Vertexes[indexFrom],
+                Texture = VisualizationModel.Textures[textureIndexFrom]
             };
-            Pixel pixelTo = new Pixel()
+            var pixelTo = new Pixel()
             {
                 Point = new Vector3(
                     (int) Math.Round(vertexTo.X),
                     (int) Math.Round(vertexTo.Y),
                     vertexTo.Z
                 ),
-                Normal = _model.Normals[indexNormalTo],
-                World = _model.Vertexes[indexTo],
-                Texture = _model.Textures[textureIndexTo]
+                Normal = VisualizationModel.Normals[indexNormalTo],
+                World = VisualizationModel.Vertexes[indexTo],
+                Texture = VisualizationModel.Textures[textureIndexTo]
             };
 
-            IEnumerable<Pixel> drawnPixels = LineDrawer.DrawLinePoints(pixelFrom, pixelTo);
+            var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
 
-            foreach (Pixel pixel in drawnPixels)
+            foreach (var pixel in drawnPixels)
             {
                 sidesList.Add(pixel);
 
@@ -137,13 +142,13 @@ namespace CGALabs_N6_Edition.Drawing
             Pixel pixelFrom, pixelTo;
             SearchMinAndMaxY(sidesList, out minY, out maxY);
 
-            for (int y = minY + 1; y < maxY; y++)
+            for (var y = minY + 1; y < maxY; y++)
             {
                 SearchStartAndEndXByY(sidesList, y, out pixelFrom, out pixelTo);
 
-                IEnumerable<Pixel> drawnPixels = LineDrawer.DrawLinePoints(pixelFrom, pixelTo);
+                var drawnPixels = LineCreator.DrawLinePoints(pixelFrom, pixelTo);
 
-                foreach (Pixel pixel in drawnPixels)
+                foreach (var pixel in drawnPixels)
                 {
                     DrawPixel(pixel, lightVector, viewVector);
                 }
@@ -152,7 +157,7 @@ namespace CGALabs_N6_Edition.Drawing
 
         protected void DrawPixel(Pixel pixel, Vector3 lightVector, Vector3 viewVector)
         {
-            Vector3 point = pixel.Point;
+            var point = pixel.Point;
 
             if (point.X > 0
                 && point.X < ZBuffer.Width
@@ -161,14 +166,14 @@ namespace CGALabs_N6_Edition.Drawing
             {
                 if (point.Z <= ZBuffer[(int) point.X, (int) point.Y])
                 {
-                    Vector4 world4 = pixel.World / pixel.World.W;
-                    Vector3 world3 = new Vector3(world4.X, world4.Y, world4.Z);
+                    var world4 = pixel.World / pixel.World.W;
+                    var world3 = new Vector3(world4.X, world4.Y, world4.Z);
 
-                    Color color = Light.GetPointColorWithTexture(
+                    var color = PhongLight.GetPointColorWithTexture(
                         pixel.Normal,
                         lightVector,
                         viewVector - world3,
-                        _model,
+                        VisualizationModel,
                         pixel.Texture
                     );
 

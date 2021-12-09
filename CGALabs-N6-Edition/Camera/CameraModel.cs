@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Camera
 {
     public class CameraModel
     {

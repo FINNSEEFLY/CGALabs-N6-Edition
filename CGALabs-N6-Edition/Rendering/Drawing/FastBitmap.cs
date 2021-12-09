@@ -2,7 +2,7 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Rendering.Drawing
 {
     public class FastBitmap : IDisposable
     {
@@ -85,7 +85,7 @@ namespace CGALabs_N6_Edition
             Bits[x + (y * Width)] = color.ToArgb();
         }
 
-        public Color GetPixel(int x, int y)
+        private Color GetPixel(int x, int y)
         {
             var index = x + (y * Width);
             var color = Color.FromArgb(Bits[index-1]);
@@ -97,46 +97,39 @@ namespace CGALabs_N6_Edition
             BitsHandle.Free();
         }
 
-        public Vector3 GetPixelRGBVector(int x, int y)
+        private Vector3 GetPixelRgbVector(int x, int y)
         {
-            /*if (x < 0 || x >= Width || y < 0 || y >= Height)
-            {
-                return Vector3.Zero;
-            }*/
-
             var color = GetPixel(x, y);
             return new Vector3(color.R, color.G, color.B);
         }
 
-        public Vector3 Bilinear(float x, float y)
+        public Vector3 BilinearInterpolation(float x, float y)
         {
-            int x1 = (int) x;
-            int y1 = (int) y;
+            var x1 = (int) x;
+            var y1 = (int) y;
 
-            float deltaX = x - x1;
-            float deltaY = y - y1;
+            var deltaX = x - x1;
+            var deltaY = y - y1;
 
-            if (deltaX == 0 && deltaY == 0)
+            switch (deltaX)
             {
-                return GetPixelRGBVector(x1, y1);
-            }
-
-            if (deltaX == 0)
-            {
-                return (-deltaY + 1) * GetPixelRGBVector(x1, y1)
-                       + deltaY * GetPixelRGBVector(x1, y1 + 1);
+                case 0 when deltaY == 0:
+                    return GetPixelRgbVector(x1, y1);
+                case 0:
+                    return (-deltaY + 1) * GetPixelRgbVector(x1, y1)
+                           + deltaY * GetPixelRgbVector(x1, y1 + 1);
             }
 
             if (deltaY == 0)
             {
-                return (-deltaX + 1) * GetPixelRGBVector(x1, y1)
-                       + deltaX * GetPixelRGBVector(x1 + 1, y1);
+                return (-deltaX + 1) * GetPixelRgbVector(x1, y1)
+                       + deltaX * GetPixelRgbVector(x1 + 1, y1);
             }
 
-            Vector3 y1Vector = (-deltaX + 1) * GetPixelRGBVector(x1, y1)
-                               + deltaX * GetPixelRGBVector(x1 + 1, y1);
-            Vector3 y2Vector = (-deltaX + 1) * GetPixelRGBVector(x1, y1 + 1)
-                               + deltaX * GetPixelRGBVector(x1 + 1, y1 + 1);
+            var y1Vector = (-deltaX + 1) * GetPixelRgbVector(x1, y1)
+                           + deltaX * GetPixelRgbVector(x1 + 1, y1);
+            var y2Vector = (-deltaX + 1) * GetPixelRgbVector(x1, y1 + 1)
+                           + deltaX * GetPixelRgbVector(x1 + 1, y1 + 1);
             return (-deltaX + 1) * y1Vector
                    + deltaX * y2Vector;
         }

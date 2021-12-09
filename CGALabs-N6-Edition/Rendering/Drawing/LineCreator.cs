@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Rendering.Drawing
 {
-    public static class LineDrawer
+    public static class LineCreator
     {
         public static IEnumerable<Pixel> DrawLinePoints(Pixel pixel1, Pixel pixel2)
         {
@@ -92,7 +92,7 @@ namespace CGALabs_N6_Edition
 
             return points;
         }
-        public static void DrawLinePoints(Point point1, Point point2, BitmapDrawer bitmapDrawer)
+        public static void DrawLinePoints(Point point1, Point point2, Rasterizer rasterizer)
         {
             var signX = 1;
             var signY = 1;
@@ -114,7 +114,7 @@ namespace CGALabs_N6_Edition
 
             while (point1.X != point2.X || point1.Y != point2.Y)
             {
-                bitmapDrawer.DrawPoint(new Point(point1.X, point1.Y));
+                rasterizer.DrawPoint(new Point(point1.X, point1.Y));
 
                 var error2 = error * 2;
 
@@ -129,7 +129,7 @@ namespace CGALabs_N6_Edition
                 point1.Y += signY;
             }
 
-            bitmapDrawer.DrawPoint(new Point(point2.X, point2.Y));
+            rasterizer.DrawPoint(new Point(point2.X, point2.Y));
         }
     }
 }

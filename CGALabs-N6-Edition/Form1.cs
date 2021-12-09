@@ -2,7 +2,10 @@ using CGALabs_N6_Edition.Interfaces;
 using CGALabs_N6_Edition.Models;
 using Microsoft.Extensions.Logging;
 using System.Numerics;
-using CGALabs_N6_Edition.Drawing;
+using CGALabs_N6_Edition.Camera;
+using CGALabs_N6_Edition.Helpers;
+using CGALabs_N6_Edition.Rendering.Drawing;
+using CGALabs_N6_Edition.Rendering.Light;
 using Timer = System.Windows.Forms.Timer;
 
 namespace CGALabs_N6_Edition
@@ -13,8 +16,8 @@ namespace CGALabs_N6_Edition
         private readonly IObjectFileReader _objectFileReader;
         private ParsedGraphicsObject _parsedGraphicsObject;
         private MatrixTransformer _transformer;
-        private BitmapDrawer _bitmapDrawer;
-        private CameraManipulator _cameraManipulator;
+        private Rasterizer _rasterizer;
+        private CameraController _cameraController;
         private VisualizationModel _visualizationModel;
         private readonly int _timerInterval = 6; // 6 - 144 FPS | 16 - 60 FPS | 33 - 30 FPS
         private readonly Timer _timer;
@@ -23,9 +26,9 @@ namespace CGALabs_N6_Edition
 
         // private PhongBitmapDrawer _phongBitmapDrawer;
         //private LambertBitmapDrawer _lambertBitmapDrawer;
-        private TextureBitmapDrawer _textureBitmapDrawer;
+        private TextureRasterizer _textureRasterizer;
 
-        private LightManipulator _lightSourceManipulator;
+        private LightController _lightSourceController;
 
         private List<Vector3> _points = new();
 
@@ -45,13 +48,13 @@ namespace CGALabs_N6_Edition
             _objectFileReader = objectFileReader;
             InitializeComponent();
 
-            _cameraManipulator = new CameraManipulator();
-            _lightSourceManipulator = new LightManipulator();
+            _cameraController = new CameraController();
+            _lightSourceController = new LightController();
             _transformer = new MatrixTransformer(Size.Width, Size.Height);
             // _bitmapDrawer = new BitmapDrawer(Size.Width, Size.Height);
             //_lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
             // _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
-            _textureBitmapDrawer = new TextureBitmapDrawer(Size.Width, Size.Height);
+            _textureRasterizer = new TextureRasterizer(Size.Width, Size.Height);
             _timer = new Timer
             {
                 Interval = _timerInterval,
@@ -76,15 +79,15 @@ namespace CGALabs_N6_Edition
 
             var startTime = DateTime.Now;
 
-            _points = _transformer.Transform(_cameraManipulator.Camera, _visualizationModel);
+            _points = _transformer.ApplyTransformations(_cameraController.Camera, _visualizationModel);
             // this.BackgroundImage = _bitmapDrawer.GetBitmap(_points, _watchModel);
             /*this.BackgroundImage = _phongBitmapDrawer.GetBitmap(_points, _visualizationModel,
             _lightSourceManipulator.LightSourcePosition, _cameraManipulator.Camera.Eye);*/
-            this.BackgroundImage = _textureBitmapDrawer.GetBitmap(
+            this.BackgroundImage = _textureRasterizer.GetBitmap(
                 _points,
                 _visualizationModel,
-                _lightSourceManipulator.LightSourcePosition,
-                _cameraManipulator.Camera.Eye
+                _lightSourceController.LightSourcePosition,
+                _cameraController.Camera.Eye
             );
 
             //this.BackgroundImage = _lambertBitmapDrawer.GetBitmap(_points, _watchModel, _lightSourceManipulator.LightSource);
@@ -165,7 +168,7 @@ namespace CGALabs_N6_Edition
 
             // _phongBitmapDrawer = new PhongBitmapDrawer(Size.Width, Size.Height);
             // _lambertBitmapDrawer = new LambertBitmapDrawer(Size.Width, Size.Height);
-            _textureBitmapDrawer = new TextureBitmapDrawer(Size.Width, Size.Height);
+            _textureRasterizer = new TextureRasterizer(Size.Width, Size.Height);
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -193,8 +196,8 @@ namespace CGALabs_N6_Edition
                 var yOffset = _mousePosition.Y - e.Y;
                 SaveMousePosition(e);
 
-                _cameraManipulator.RotateX(yOffset);
-                _cameraManipulator.RotateY(xOffset);
+                _cameraController.RotateX(yOffset);
+                _cameraController.RotateY(xOffset);
             }
             else
             {
@@ -202,8 +205,8 @@ namespace CGALabs_N6_Edition
                 var yOffset = _mousePosition.Y - e.Y;
                 SaveMousePosition(e);
 
-                _lightSourceManipulator.RotateX(yOffset);
-                _lightSourceManipulator.RotateY(xOffset);
+                _lightSourceController.RotateX(yOffset);
+                _lightSourceController.RotateY(xOffset);
             }
         }
 
@@ -226,12 +229,12 @@ namespace CGALabs_N6_Edition
                 }
                 case Keys.W:
                 {
-                    _cameraManipulator.Zoom();
+                    _cameraController.Zoom();
                     break;
                 }
                 case Keys.S:
                 {
-                    _cameraManipulator.Zoom(true);
+                    _cameraController.Zoom(true);
                     break;
                 }
             }
