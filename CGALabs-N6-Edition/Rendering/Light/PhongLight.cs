@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using CGALabs_N6_Edition.Helpers;
 using CGALabs_N6_Edition.Models;
+using CGALabs_N6_Edition.Rendering.Drawing;
 
 namespace CGALabs_N6_Edition.Rendering.Light
 {
@@ -63,23 +64,24 @@ namespace CGALabs_N6_Edition.Rendering.Light
         }
 
         public static Color CalculatePixelColorForTexture(
-           Vector3 normal,
-           Vector3 light,
+            Pixel pixel,
+            Vector3 light,
            Vector3 view,
-           VisualizationModel model,
-           Vector3 texture
-       )
+           VisualizationModel model
+        )
         {
-            var normalVector = Vector3.Normalize(normal);
+            var normalVector = Vector3.Normalize(pixel.Normal);
             var lightVector = Vector3.Normalize(light);
             var viewVector = Vector3.Normalize(view);
 
-            var x = texture.X * model.DiffuseTexture.Width;
-            var y = (1 - texture.Y) * model.DiffuseTexture.Height;
+            var x = (pixel.Texture.X * model.DiffuseTexture.Width / pixel.Point.Z)
+                    / ((1 - pixel.Texture.Y) / pixel.Point.Z + pixel.Texture.Y / pixel.Point.Z);
+            var y = ((1 - pixel.Texture.Y) * model.DiffuseTexture.Height / pixel.Point.Z)
+                    / ((1 - pixel.Texture.Y) / pixel.Point.Z + pixel.Texture.Y / pixel.Point.Z);
 
 
-            x = AdditionalMath.Clamp(x, model.DiffuseTexture.Width);
-            y = AdditionalMath.Clamp(y, model.DiffuseTexture.Height);
+            x = AdditionalMath.RetainInValueArea(x, model.DiffuseTexture.Width);
+            y = AdditionalMath.RetainInValueArea(y, model.DiffuseTexture.Height);
             if (x < 0 || y < 0)
             {
                 return Color.FromArgb(255, 0, 0, 0);

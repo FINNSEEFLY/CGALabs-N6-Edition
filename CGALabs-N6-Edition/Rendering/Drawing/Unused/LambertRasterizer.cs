@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using CGALabs_N6_Edition.Models;
 using CGALabs_N6_Edition.Rendering.Light;
+using CGALabs_N6_Edition.Rendering.Light.Unused;
 
 namespace CGALabs_N6_Edition.Rendering.Drawing
 {

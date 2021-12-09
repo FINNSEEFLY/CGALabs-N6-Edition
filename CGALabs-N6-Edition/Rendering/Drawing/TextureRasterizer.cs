@@ -153,11 +153,10 @@ namespace CGALabs_N6_Edition.Rendering.Drawing
                     var world3 = new Vector3(world4.X, world4.Y, world4.Z);
 
                     var color = PhongLight.CalculatePixelColorForTexture(
-                        pixel.Normal,
+                        pixel,
                         lightVector,
                         viewVector - world3,
-                        VisualizationModel,
-                        pixel.Texture
+                        VisualizationModel
                     );
 
                     ZBuffer[(int) point.X, (int) point.Y] = point.Z;
