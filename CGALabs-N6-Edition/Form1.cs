@@ -142,11 +142,11 @@ namespace CGALabs_N6_Edition
             _visualizationModel.DiffuseTexture =
                 (diffusePath != null && File.Exists(diffusePath)) ? new FastBitmap(diffusePath) : null;
 
-            _visualizationModel.NormalsTexture =
-                (normalPath != null && File.Exists(normalPath)) ? new FastBitmap(normalPath) : null;
-
             _visualizationModel.ReflectionTexture = 
                 (reflectPath != null && File.Exists(reflectPath)) ? new FastBitmap(reflectPath) : null;
+
+            _visualizationModel.NormalsTexture =
+                (normalPath != null && File.Exists(normalPath)) ? new FastBitmap(normalPath) : null;
 
         }
 
