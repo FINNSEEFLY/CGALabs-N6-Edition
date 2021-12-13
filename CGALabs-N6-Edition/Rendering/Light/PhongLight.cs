@@ -80,7 +80,7 @@ namespace CGALabs_N6_Edition.Rendering.Light
             var lightVector = Vector3.Normalize(light);
             var viewVector = Vector3.Normalize(view);
             
-            // Получение перспективной проекции
+            // Перспективная проекция
             var x = (pixel.Texture.X * model.DiffuseTexture.Width / pixel.Point.Z)
                     / ((1 - pixel.Texture.Y) / pixel.Point.Z + pixel.Texture.Y / pixel.Point.Z);
             var y = ((1 - pixel.Texture.Y) * model.DiffuseTexture.Height / pixel.Point.Z)
