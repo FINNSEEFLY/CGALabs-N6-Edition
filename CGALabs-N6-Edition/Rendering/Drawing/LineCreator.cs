@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Rendering.Drawing
 {
-    public static class LineDrawer
+    public static class LineCreator
     {
-        public static IEnumerable<Pixel> DrawLinePoints(Pixel pixel1, Pixel pixel2)
+        public static IEnumerable<Pixel> CreateLinePoints(Pixel pixel1, Pixel pixel2)
         {
             var points = new List<Pixel>();
 
@@ -13,6 +13,7 @@ namespace CGALabs_N6_Edition
 
             var normal1 = pixel1.Normal;
             var world1 = pixel1.World;
+            var texture1 = pixel1.Texture;
 
             int signX = 1, signY = 1;
 
@@ -23,6 +24,7 @@ namespace CGALabs_N6_Edition
 
             var deltaN = pixel2.Normal - pixel1.Normal;
             var deltaW = pixel2.World - pixel1.World;
+            var deltaT = pixel2.Texture - pixel1.Texture;
 
 
             if (deltaX > deltaY)
@@ -30,12 +32,14 @@ namespace CGALabs_N6_Edition
                 deltaZ /= deltaX;
                 deltaN /= deltaX;
                 deltaW /= deltaX;
+                deltaT /= deltaX;
             }
             else
             {
                 deltaZ /= deltaY;
                 deltaN /= deltaY;
                 deltaW /= deltaY;
+                deltaT /= deltaY;
             }
 
             if (point1.X > point2.X)
@@ -55,7 +59,8 @@ namespace CGALabs_N6_Edition
                 {
                     Point = new Vector3(point1.X, point1.Y, point1.Z),
                     Normal = normal1,
-                    World = world1
+                    World = world1,
+                    Texture = texture1
                 });
 
                 var error2 = error * 2;
@@ -74,18 +79,20 @@ namespace CGALabs_N6_Edition
                 point1.Z += deltaZ;
                 normal1 += deltaN;
                 world1 += deltaW;
+                texture1 += deltaT;
             }
 
             points.Add(new Pixel()
             {
                 Point = new Vector3(point1.X, point1.Y, point1.Z),
                 Normal = normal1,
-                World = world1
+                World = world1,
+                Texture = texture1
             });
 
             return points;
         }
-        public static void DrawLinePoints(Point point1, Point point2, BitmapDrawer bitmapDrawer)
+        public static void CreateLinePoints(Point point1, Point point2, Rasterizer rasterizer)
         {
             var signX = 1;
             var signY = 1;
@@ -107,7 +114,7 @@ namespace CGALabs_N6_Edition
 
             while (point1.X != point2.X || point1.Y != point2.Y)
             {
-                bitmapDrawer.DrawPoint(new Point(point1.X, point1.Y));
+                rasterizer.DrawPoint(new Point(point1.X, point1.Y));
 
                 var error2 = error * 2;
 
@@ -122,7 +129,7 @@ namespace CGALabs_N6_Edition
                 point1.Y += signY;
             }
 
-            bitmapDrawer.DrawPoint(new Point(point2.X, point2.Y));
+            rasterizer.DrawPoint(new Point(point2.X, point2.Y));
         }
     }
 }

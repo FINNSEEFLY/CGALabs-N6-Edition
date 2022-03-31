@@ -1,7 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using CGALabs_N6_Edition.Camera;
+using CGALabs_N6_Edition.Models;
+using System.Collections.Concurrent;
 using System.Numerics;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Helpers
 {
     public class MatrixTransformer
     {
@@ -14,54 +16,57 @@ namespace CGALabs_N6_Edition
             Height = height;
         }
 
-        public List<Vector3> Transform(CameraModel camera, VisualizationModel model)
+        public List<Vector3> ApplyTransformations(Camera.Camera camera, VisualizationModel model)
         {
             // Мировые координаты
-            var worldMatrix = GetWorldSpace(model);
+            var worldMatrix = CreateWorldSpace(model);
+            model.WorldMatrix = worldMatrix;
 
             // Координаты наблюдателя
-            var viewMatrix = GetViewSpace(camera);
+            var viewMatrix = CreateViewSpace(camera);
 
             // Координаты перспективной проекции
-            var projectionMatrix = GetPerspectiveSpace(camera.Fov, Width, Height);
+            var projectionMatrix = CreatePerspectiveSpace(camera.Fov, Width, Height);
 
             // Матрица трансформации
             var transformMatrix = worldMatrix * viewMatrix * projectionMatrix;
 
             // Координаты окна
-            return GetWindowSpace(transformMatrix, model.Vertexes);
+            var vertexes = GetWindowSpace(transformMatrix, model.Vertexes);
+
+            return vertexes;
         }
 
-        private Matrix4x4 GetWorldSpace(VisualizationModel model)
+        private Matrix4x4 CreateWorldSpace(VisualizationModel model)
         {
             return Matrix4x4.CreateScale(model.Scale)
-                   * GetRotation(model.Rotation)
-                   * GetTranslation(model.Position);
+                   * CreateRotation(model.Rotation)
+                   * CreateTranslation(model.Position);
         }
 
-        private static Matrix4x4 GetTranslation(Vector3 vector)
+        private static Matrix4x4 CreateTranslation(Vector3 vector)
         {
             return Matrix4x4.CreateTranslation(vector);
         }
 
-        private static Matrix4x4 GetRotation(Vector3 vector)
+        private static Matrix4x4 CreateRotation(Vector3 vector)
         {
             return Matrix4x4.CreateRotationY(vector.Y)
                    * Matrix4x4.CreateRotationX(vector.X)
                    * Matrix4x4.CreateRotationZ(vector.Z);
         }
 
-        private static Matrix4x4 GetViewSpace(CameraModel camera)
+        private static Matrix4x4 CreateViewSpace(Camera.Camera camera)
         {
             return Matrix4x4.CreateLookAt(camera.Eye, camera.Target, camera.Up);
         }
 
-        private static Matrix4x4 GetPerspectiveSpace(float fov, float width, float height)
+        private static Matrix4x4 CreatePerspectiveSpace(float fov, float width, float height)
         {
             return Matrix4x4.CreatePerspectiveFieldOfView(fov, width / height, 0.1f, 200.0f);
         }
 
-        private static Matrix4x4 GetViewPortSpace
+        private static Matrix4x4 CreateViewPortSpace
         (
             float width,
             float height,
@@ -81,7 +86,7 @@ namespace CGALabs_N6_Edition
             var windowPoints = new Vector3[vertexes.Count];
 
             // Координаты в соответствии с шириной и высотой экрана
-            var viewPortMatrix = GetViewPortSpace(Width, Height);
+            var viewPortMatrix = CreateViewPortSpace(Width, Height);
 
             Parallel.ForEach(Partitioner.Create(0, vertexes.Count), range =>
             {

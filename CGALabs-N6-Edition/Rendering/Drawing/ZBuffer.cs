@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Rendering.Drawing
 {
     public class ZBuffer : IEnumerable<double>
     {

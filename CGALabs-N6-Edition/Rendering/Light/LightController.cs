@@ -1,14 +1,14 @@
 ﻿using System.Numerics;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Rendering.Light
 {
-    public class LightManipulator
+    public class LightController
     {
         public Vector3 LightSourcePosition { get; private set; }
 
         private const float Sensitivity = 0.1f;
 
-        public LightManipulator()
+        public LightController()
         {
             LightSourcePosition = new Vector3(0, 500, 0);
         }

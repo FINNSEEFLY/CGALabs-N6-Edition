@@ -1,7 +1,8 @@
 ﻿using System.Drawing.Imaging;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace CGALabs_N6_Edition
+namespace CGALabs_N6_Edition.Rendering.Drawing
 {
     public class FastBitmap : IDisposable
     {
@@ -38,6 +39,23 @@ namespace CGALabs_N6_Edition
                 BitsHandle.AddrOfPinnedObject());
         }
 
+        public FastBitmap(string filepath)
+        {
+            var tmpBitmap = new Bitmap(filepath, true);
+            Width = tmpBitmap.Width;
+            Height = tmpBitmap.Height;
+            Bits = new int[Width * Height];
+            BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
+            Bitmap = new Bitmap(Width, Height, Width * 4, PixelFormat.Format32bppPArgb,
+                BitsHandle.AddrOfPinnedObject());
+            var sourceData =
+                tmpBitmap.LockBits(new Rectangle(0, 0, tmpBitmap.Width, tmpBitmap.Height),
+                    ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            Marshal.Copy(sourceData.Scan0, Bits, 0, Bits.Length);
+            tmpBitmap.UnlockBits(sourceData);
+            tmpBitmap.Dispose();
+        }
+
         public void Clear()
         {
             var backgroundColor = Color.White.ToArgb();
@@ -49,8 +67,7 @@ namespace CGALabs_N6_Edition
 
         public void SetPixel(int index, Color color)
         {
-            var col = color.ToArgb();
-            Bits[index] = col;
+            Bits[index] = color.ToArgb();
         }
 
         public void SetPixel(int index, int color)
@@ -68,16 +85,54 @@ namespace CGALabs_N6_Edition
             Bits[x + (y * Width)] = color.ToArgb();
         }
 
-        public Color GetPixel(int x, int y)
+        private Color GetPixel(int x, int y)
         {
             var index = x + (y * Width);
-            var color = Color.FromArgb(Bits[index]);
+            var color = Color.FromArgb(Bits[index - 1]);
             return color;
         }
 
         public void Dispose()
         {
             BitsHandle.Free();
+        }
+
+        private Vector3 GetPixelRgbVector(int x, int y)
+        {
+            var color = GetPixel(x, y);
+            return new Vector3(color.R, color.G, color.B);
+        }
+
+        public Vector3 BilinearInterpolation(float x, float y)
+        {
+            var x1 = (int) x;
+            var y1 = (int) y;
+
+            var deltaX = x - x1;
+            var deltaY = y - y1;
+
+            switch (deltaX, deltaY)
+            {
+                // deltaX==0 && deltaY==0
+                case (0, 0):
+                    return GetPixelRgbVector(x1, y1);
+                // deltaX==0 && deltaY!=0
+                case (0, _):
+                    return (-deltaY + 1) * GetPixelRgbVector(x1, y1)
+                           + deltaY * GetPixelRgbVector(x1, y1 + 1);
+                // deltaX!=0 && deltaY==0
+                case (_, 0):
+                    return (-deltaX + 1) * GetPixelRgbVector(x1, y1)
+                           + deltaX * GetPixelRgbVector(x1 + 1, y1);
+                // deltaX!=0 && deltaY!=0
+                case (_, _):
+                    var y1Vector = (-deltaX + 1) * GetPixelRgbVector(x1, y1)
+                                   + deltaX * GetPixelRgbVector(x1 + 1, y1);
+                    var y2Vector = (-deltaX + 1) * GetPixelRgbVector(x1, y1 + 1)
+                                   + deltaX * GetPixelRgbVector(x1 + 1, y1 + 1);
+                    return (-deltaX + 1) * y1Vector
+                           + deltaX * y2Vector;
+            }
         }
     }
 }
