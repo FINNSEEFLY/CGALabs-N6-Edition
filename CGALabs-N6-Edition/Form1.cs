@@ -19,7 +19,7 @@ namespace CGALabs_N6_Edition
         private Rasterizer _rasterizer;
         private readonly CameraController _cameraController;
         private VisualizationModel _visualizationModel;
-        private readonly int _timerInterval = 6; // 6 - 144 FPS | 16 - 60 FPS | 33 - 30 FPS
+        private readonly int _timerInterval = 16; // 6 - 144 FPS | 16 - 60 FPS | 33 - 30 FPS
         private readonly Timer _timer;
         private bool _isMouseDown = false;
         private Point _mousePosition = new(0, 0);
@@ -135,18 +135,18 @@ namespace CGALabs_N6_Edition
 
         private void LoadTextureFiles(string dirPath)
         {
-            var diffusePath = Directory.EnumerateFiles(dirPath, "*.diffuse").FirstOrDefault();
-            var reflectPath = Directory.EnumerateFiles(dirPath, "*.reflect").FirstOrDefault();
-            var normalPath = Directory.EnumerateFiles(dirPath, "*.normal").FirstOrDefault();
+            var diffuseMapPath = Directory.EnumerateFiles(dirPath, "*.diffuse").FirstOrDefault();
+            var reflectMapPath = Directory.EnumerateFiles(dirPath, "*.reflect").FirstOrDefault();
+            var normalMapPath = Directory.EnumerateFiles(dirPath, "*.normal").FirstOrDefault();
 
             _visualizationModel.DiffuseTexture =
-                (diffusePath != null && File.Exists(diffusePath)) ? new FastBitmap(diffusePath) : null;
+                (diffuseMapPath != null && File.Exists(diffuseMapPath)) ? new FastBitmap(diffuseMapPath) : null;
 
             _visualizationModel.ReflectionTexture = 
-                (reflectPath != null && File.Exists(reflectPath)) ? new FastBitmap(reflectPath) : null;
+                (reflectMapPath != null && File.Exists(reflectMapPath)) ? new FastBitmap(reflectMapPath) : null;
 
             _visualizationModel.NormalsTexture =
-                (normalPath != null && File.Exists(normalPath)) ? new FastBitmap(normalPath) : null;
+                (normalMapPath != null && File.Exists(normalMapPath)) ? new FastBitmap(normalMapPath) : null;
 
         }
 
